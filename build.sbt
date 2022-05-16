@@ -49,3 +49,10 @@ scalacOptions ++= Seq(
   "-Xfatal-warnings",
   "-deprecation"
 )
+
+// deployment
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
+enablePlugins(AshScriptPlugin)
+dockerBaseImage := "openjdk:jre-alpine"
+Compile / herokuAppName := "tfs-eventus"

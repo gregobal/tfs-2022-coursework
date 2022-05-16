@@ -1,0 +1,24 @@
+version: '3.3'
+services:
+
+  postgres:
+    image: postgres:13-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=eventus
+      - POSTGRES_PASSWORD=eventus
+      - POSTGRES_DB=eventus
+
+  coursework:
+    container_name: coursework
+    build:
+      context: ./target/docker/stage/
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    network_mode: "host"
+    depends_on:
+      - postgres
