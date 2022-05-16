@@ -1,8 +1,8 @@
 # Площадка для организаторов мероприятий
 
 ## Heroku Demo
-https://tfs-eventus.herokuapp.com/docs/index.html
-https://tfs-eventus.herokuapp.com/docs/docs.yaml
+https://tfs-eventus.herokuapp.com/docs/index.html <br>
+https://tfs-eventus.herokuapp.com/docs/docs.yaml <br>
 
 ## MVP (предварительно)
 
@@ -24,8 +24,8 @@ https://tfs-eventus.herokuapp.com/docs/docs.yaml
 
 ## Roadmap
 
-✓ Каркас приложения на основе простой сущности (событие)
-· Определение MVP
-· Реализация MVP
-· Рассылки уведомлений (??? - мыло и/или телега) (??? - сервис внутри приложения или отдельный микросервис)
-· Поиск
+✓ Каркас приложения на основе простой сущности (событие) <br>
+· Определение MVP <br>
+· Реализация MVP <br>
+· Рассылки уведомлений (??? - мыло и/или телега) (??? - сервис внутри приложения или отдельный микросервис) <br>
+· Поиск <br>
