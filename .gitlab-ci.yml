@@ -1,0 +1,15 @@
+image: ${DOCKER_REGISTRY}hseeberger/scala-sbt:17.0.2_1.6.2_2.13.8
+
+stages:          # List of stages for jobs, and their order of execution
+  - deploy
+
+deploy-job:      # This job runs in the deploy stage.
+  stage: deploy
+  only:
+    - develop
+  variables:
+    HEROKU_API_KEY: $HEROKU_API_KEY
+  script:
+    - echo "Deploying application..."
+    - sbt stage deployHeroku
+    - echo "Application successfully deployed."
