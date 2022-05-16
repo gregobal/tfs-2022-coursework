@@ -1,5 +1,9 @@
 # Площадка для организаторов мероприятий
 
+## Heroku Demo
+https://tfs-eventus.herokuapp.com/docs/index.html
+https://tfs-eventus.herokuapp.com/docs/docs.yaml
+
 ## MVP (предварительно)
 
 - Сообщество (организации или группы по интересам)
