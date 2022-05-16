@@ -1,3 +1,5 @@
+# For local development
+
 version: '3.3'
 services:
 
@@ -11,14 +13,14 @@ services:
       - POSTGRES_PASSWORD=eventus
       - POSTGRES_DB=eventus
 
-  coursework:
-    container_name: coursework
-    build:
-      context: ./target/docker/stage/
-      dockerfile: Dockerfile
-    restart: on-failure
-    ports:
-      - "8080:8080"
-    network_mode: "host"
-    depends_on:
-      - postgres
+#  coursework:
+#    container_name: coursework
+#    build:
+#      context: ./target/docker/stage/
+#      dockerfile: Dockerfile
+#    restart: on-failure
+#    ports:
+#      - "8080:8080"
+#    network_mode: "host"
+#    depends_on:
+#      - postgres
