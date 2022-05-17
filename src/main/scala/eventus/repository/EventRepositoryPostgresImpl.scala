@@ -5,13 +5,16 @@ import eventus.model.Event
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
+import java.util.UUID
 import javax.sql.DataSource
 
 case class EventRepositoryPostgresImpl(dataSource: DataSource)
     extends EventRepository {
 
-  import eventus.common.PostgresQuillCustomCodec.{encodeZonedDateTime, decodeZonedDateTime}
-
+  import eventus.common.PostgresQuillCustomCodec.{
+    encodeZonedDateTime,
+    decodeZonedDateTime
+  }
 
   private val ctx = new PostgresZioJdbcContext(SnakeCase)
   import ctx._
@@ -21,7 +24,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
   )
 
   override def filterByCommunityId(
-      communityId: String
+      communityId: UUID
   ): IO[RepositoryError, List[Event]] =
     ctx
       .run(
@@ -32,7 +35,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
-  override def filterById(id: String): IO[RepositoryError, Option[Event]] =
+  override def filterById(id: UUID): IO[RepositoryError, Option[Event]] =
     ctx
       .run(
         quote(

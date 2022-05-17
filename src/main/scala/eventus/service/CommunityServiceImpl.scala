@@ -7,23 +7,25 @@ import eventus.repository.CommunityRepository
 import io.scalaland.chimney.dsl.TransformerOps
 import zio.{IO, URLayer, ZLayer}
 
+import java.util.UUID
+
 case class CommunityServiceImpl(repo: CommunityRepository)
     extends CommunityService {
   override def getAll: IO[AppError, List[Community]] = {
     repo.queryAll
   }
 
-  override def getById(id: String): IO[AppError, Option[Community]] = {
+  override def getById(id: UUID): IO[AppError, Option[Community]] = {
     repo.filterById(id)
   }
 
   override def create(
       communityCreateDTO: CommunityCreateDTO
-  ): IO[AppError, String] = for {
+  ): IO[AppError, UUID] = for {
     id <- zio.Random.nextUUID
     community = communityCreateDTO
       .into[Community]
-      .withFieldConst(_.id, id.toString)
+      .withFieldConst(_.id, id)
       .transform
     _ <- repo.insert(community)
   } yield community.id

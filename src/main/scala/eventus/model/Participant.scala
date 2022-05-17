@@ -1,7 +1,9 @@
 package eventus.model
 
+import java.util.UUID
+
 case class Participant(
-    id: String,
-    memberId: String,
-    eventId: String
+    id: UUID,
+    memberId: UUID,
+    eventId: UUID
 )

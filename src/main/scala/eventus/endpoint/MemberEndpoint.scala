@@ -10,6 +10,8 @@ import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.ztapir.{RichZEndpoint, ZServerEndpoint}
 import sttp.tapir.{endpoint, path, query}
 
+import java.util.UUID
+
 object MemberEndpoint {
 
   private val memberEndpoint = endpoint.in("members")
@@ -18,7 +20,7 @@ object MemberEndpoint {
 
   val all: List[ZServerEndpoint[MemberService, ZioStreams]] = List(
     memberEndpoint.get
-      .in(query[String]("communityId"))
+      .in(query[UUID]("communityId"))
       .out(jsonBody[List[Member]])
       .errorOut(jsonBody[String])
       .zServerLogic(communityId =>
@@ -26,7 +28,7 @@ object MemberEndpoint {
           .mapError(err => err.message)
       ),
     memberEndpoint.get
-      .in(path[String]("id"))
+      .in(path[UUID]("id"))
       .out(jsonBody[Option[Member]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
@@ -35,14 +37,14 @@ object MemberEndpoint {
       ),
     memberEndpoint.post
       .in(jsonBody[MemberCreateDTO])
-      .out(jsonBody[String])
+      .out(jsonBody[UUID])
       .errorOut(jsonBody[String])
       .zServerLogic(eventCreateDTO =>
         MemberService(_.create(eventCreateDTO))
           .mapError(err => err.message)
       ),
     memberEndpoint.delete
-      .in(path[String]("id"))
+      .in(path[UUID]("id"))
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
         MemberService(_.delete(id))

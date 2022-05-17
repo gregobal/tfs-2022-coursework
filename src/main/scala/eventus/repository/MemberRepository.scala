@@ -4,11 +4,13 @@ import eventus.error.RepositoryError
 import eventus.model.Member
 import zio.IO
 
+import java.util.UUID
+
 trait MemberRepository {
   def filterByCommunityId(
-      communityId: String
+      communityId: UUID
   ): IO[RepositoryError, List[Member]]
-  def filterById(id: String): IO[RepositoryError, Option[Member]]
+  def filterById(id: UUID): IO[RepositoryError, Option[Member]]
   def insert(member: Member): IO[RepositoryError, Unit]
-  def delete(id: String): IO[RepositoryError, Unit]
+  def delete(id: UUID): IO[RepositoryError, Unit]
 }

@@ -1,6 +1,8 @@
 package eventus.dto
 
+import java.util.UUID
+
 case class ParticipantCreateDTO(
-    memberId: String,
-    eventId: String
+    memberId: UUID,
+    eventId: UUID
 )

@@ -11,7 +11,7 @@ val zioLoggingVersion = "2.0.0-RC8"
 ThisBuild / libraryDependencies ++= Seq(
   //core
   "dev.zio" %% "zio" % zioVersion,
-  "dev.zio" %% "zio-test"     % zioVersion % Test,
+  "dev.zio" %% "zio-test" % zioVersion % Test,
   "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
   //config
   "com.github.pureconfig" %% "pureconfig" % "0.17.1",
@@ -35,7 +35,7 @@ ThisBuild / libraryDependencies ++= Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % tapirVersion,
   //json
   "io.circe" %% "circe-core" % circeVersion,
-  "io.circe" %% "circe-generic"        % circeVersion,
+  "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-generic-extras" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
   //util

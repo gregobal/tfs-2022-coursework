@@ -5,14 +5,18 @@ import eventus.error.AppError
 import eventus.model.Participant
 import zio.{Accessible, IO}
 
+import java.util.UUID
+
 trait ParticipantService {
-  def getById(id: String): IO[AppError, Option[Participant]]
+  def getById(id: UUID): IO[AppError, Option[Participant]]
   def getByQueryParams(
-      eventId: String,
-      memberId: Option[String]
+      eventId: UUID,
+      memberId: Option[UUID]
   ): IO[AppError, List[Participant]]
-  def create(participantCreateDTO: ParticipantCreateDTO): IO[AppError, String]
-  def delete(id: String): IO[AppError, Unit]
+  def create(
+      participantCreateDTO: ParticipantCreateDTO
+  ): IO[AppError, UUID]
+  def delete(id: UUID): IO[AppError, Unit]
 }
 
 object ParticipantService extends Accessible[ParticipantService]

@@ -1,9 +1,10 @@
 package eventus.dto
 
 import java.time.ZonedDateTime
+import java.util.UUID
 
 case class EventCreateDTO(
-    communityId: String,
+    communityId: UUID,
     title: String,
     description: Option[String],
     datetime: ZonedDateTime,

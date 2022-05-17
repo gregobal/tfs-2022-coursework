@@ -5,10 +5,12 @@ import eventus.error.AppError
 import eventus.model.Community
 import zio.{Accessible, IO}
 
+import java.util.UUID
+
 trait CommunityService {
   def getAll: IO[AppError, List[Community]]
-  def getById(id: String): IO[AppError, Option[Community]]
-  def create(communityCreateDTO: CommunityCreateDTO): IO[AppError, String]
+  def getById(id: UUID): IO[AppError, Option[Community]]
+  def create(communityCreateDTO: CommunityCreateDTO): IO[AppError, UUID]
   def update(community: Community): IO[AppError, Unit]
 }
 

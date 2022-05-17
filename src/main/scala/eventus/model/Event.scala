@@ -1,10 +1,11 @@
 package eventus.model
 
 import java.time.ZonedDateTime
+import java.util.UUID
 
 case class Event(
-    id: String,
-    communityId: String,
+    id: UUID,
+    communityId: UUID,
     title: String,
     description: Option[String],
     datetime: ZonedDateTime,

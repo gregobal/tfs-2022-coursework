@@ -10,6 +10,8 @@ import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.ztapir.{RichZEndpoint, ZServerEndpoint}
 import sttp.tapir.{endpoint, path}
 
+import java.util.UUID
+
 object CommunityEndpoint {
 
   private val communityEndpoint = endpoint.in("communities")
@@ -24,7 +26,7 @@ object CommunityEndpoint {
           .mapError(err => err.message)
       ),
     communityEndpoint.get
-      .in(path[String]("id"))
+      .in(path[UUID]("id"))
       .out(jsonBody[Option[Community]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
@@ -33,7 +35,7 @@ object CommunityEndpoint {
       ),
     communityEndpoint.post
       .in(jsonBody[CommunityCreateDTO])
-      .out(jsonBody[String])
+      .out(jsonBody[UUID])
       .errorOut(jsonBody[String])
       .zServerLogic(communityCreateDTO =>
         CommunityService(_.create(communityCreateDTO))

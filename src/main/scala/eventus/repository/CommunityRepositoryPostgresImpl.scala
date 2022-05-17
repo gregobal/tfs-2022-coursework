@@ -5,6 +5,7 @@ import eventus.model.Community
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
+import java.util.UUID
 import javax.sql.DataSource
 
 case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
@@ -25,7 +26,9 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
-  override def filterById(id: String): IO[RepositoryError, Option[Community]] =
+  override def filterById(
+      id: UUID
+  ): IO[RepositoryError, Option[Community]] =
     ctx
       .run(
         quote(

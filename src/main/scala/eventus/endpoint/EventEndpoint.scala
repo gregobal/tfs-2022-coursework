@@ -10,6 +10,8 @@ import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.ztapir.{RichZEndpoint, ZServerEndpoint}
 import sttp.tapir.{endpoint, path, query}
 
+import java.util.UUID
+
 object EventEndpoint {
 
   private val eventEndpoint = endpoint.in("events")
@@ -18,7 +20,7 @@ object EventEndpoint {
 
   val all: List[ZServerEndpoint[EventService, ZioStreams]] = List(
     eventEndpoint.get
-      .in(query[String]("communityId"))
+      .in(query[UUID]("communityId"))
       .out(jsonBody[List[Event]])
       .errorOut(jsonBody[String])
       .zServerLogic(communityId =>
@@ -26,7 +28,7 @@ object EventEndpoint {
           .mapError(err => err.message)
       ),
     eventEndpoint.get
-      .in(path[String]("id"))
+      .in(path[UUID]("id"))
       .out(jsonBody[Option[Event]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
@@ -35,7 +37,7 @@ object EventEndpoint {
       ),
     eventEndpoint.post
       .in(jsonBody[EventCreateDTO])
-      .out(jsonBody[String])
+      .out(jsonBody[UUID])
       .errorOut(jsonBody[String])
       .zServerLogic(eventCreateDTO =>
         EventService(_.create(eventCreateDTO))

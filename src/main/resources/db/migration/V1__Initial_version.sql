@@ -1,9 +1,9 @@
 create table community
 (
-    id          varchar(255) not null
+    id          uuid    not null
         constraint community_pk
             primary key,
-    name        varchar      not null,
+    name        varchar not null,
     description varchar
 );
 
@@ -11,10 +11,10 @@ comment on table community is 'Сообщество по инстересам д
 
 create table if not exists event
 (
-    id           varchar(255)             not null
+    id           uuid                     not null
         constraint event_pk
             primary key,
-    community_id varchar(255)             not null,
+    community_id uuid                     not null,
     title        varchar                  not null,
     description  varchar,
     datetime     timestamp with time zone not null,
@@ -30,11 +30,11 @@ comment on table event is 'Мероприятие, проводится в ра�
 
 create table member
 (
-    id           varchar(255) not null
+    id           uuid    not null
         constraint member_pk
             primary key,
-    email        varchar      not null,
-    community_id varchar(255) not null,
+    email        varchar not null,
+    community_id uuid    not null,
 
     constraint member_community_id_fk
         foreign key (community_id) references community (id)
@@ -45,11 +45,11 @@ comment on table member is 'Член сообщества';
 
 create table participant
 (
-    id        varchar(255) not null
+    id        uuid not null
         constraint participant_pk
             primary key,
-    member_id varchar(255) not null,
-    event_id  varchar(255) not null,
+    member_id uuid not null,
+    event_id  uuid not null,
 
     constraint member_id_fk
         foreign key (member_id) references member (id)

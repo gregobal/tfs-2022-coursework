@@ -5,6 +5,7 @@ import eventus.model.Participant
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
+import java.util.UUID
 import javax.sql.DataSource
 
 case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
@@ -18,7 +19,7 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
   )
 
   override def filterById(
-      id: String
+      id: UUID
   ): IO[RepositoryError, Option[Participant]] =
     ctx
       .run(
@@ -31,8 +32,8 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def filter(
-      eventId: String,
-      memberId: Option[String]
+      eventId: UUID,
+      memberId: Option[UUID]
   ): IO[RepositoryError, List[Participant]] = {
     val participantByMember = memberId match {
       case Some(value) =>
@@ -63,7 +64,7 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
-  override def delete(id: String): IO[RepositoryError, Unit] =
+  override def delete(id: UUID): IO[RepositoryError, Unit] =
     ctx
       .run(
         quote(
