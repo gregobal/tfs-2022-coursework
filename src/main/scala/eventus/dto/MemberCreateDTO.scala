@@ -1,6 +1,6 @@
 package eventus.dto
 
 case class MemberCreateDTO(
-                               email: String,
-                               communityId: String
-                             )
+    email: String,
+    communityId: String
+)

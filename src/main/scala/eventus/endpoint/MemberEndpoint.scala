@@ -25,7 +25,6 @@ object MemberEndpoint {
         MemberService(_.getByCommunityId(communityId))
           .mapError(err => err.message)
       ),
-
     memberEndpoint.get
       .in(path[String]("id"))
       .out(jsonBody[Option[Member]])
@@ -34,7 +33,6 @@ object MemberEndpoint {
         MemberService(_.getById(id))
           .mapError(err => err.message)
       ),
-
     memberEndpoint.post
       .in(jsonBody[MemberCreateDTO])
       .out(jsonBody[String])
@@ -43,7 +41,6 @@ object MemberEndpoint {
         MemberService(_.create(eventCreateDTO))
           .mapError(err => err.message)
       ),
-
     memberEndpoint.delete
       .in(path[String]("id"))
       .errorOut(jsonBody[String])

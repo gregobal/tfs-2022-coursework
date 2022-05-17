@@ -7,7 +7,8 @@ import zio.{IO, URLayer, ZLayer}
 
 import javax.sql.DataSource
 
-case class MemberRepositoryPostgresImpl(dataSource: DataSource) extends MemberRepository {
+case class MemberRepositoryPostgresImpl(dataSource: DataSource)
+    extends MemberRepository {
 
   private val ctx = new PostgresZioJdbcContext(SnakeCase)
   import ctx._
@@ -16,39 +17,48 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource) extends MemberRe
     querySchema[Member]("member")
   )
 
-  override def filterByCommunityId(communityId: String): IO[RepositoryError, List[Member]] =
-    ctx.run(
-      quote(
-        members.filter(_.communityId == lift(communityId))
+  override def filterByCommunityId(
+      communityId: String
+  ): IO[RepositoryError, List[Member]] =
+    ctx
+      .run(
+        quote(
+          members.filter(_.communityId == lift(communityId))
+        )
       )
-    )
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def filterById(id: String): IO[RepositoryError, Option[Member]] =
-    ctx.run(
-      quote(
-        members.filter(_.id == lift(id))
+    ctx
+      .run(
+        quote(
+          members.filter(_.id == lift(id))
+        )
       )
-    ).map(_.headOption)
+      .map(_.headOption)
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def insert(event: Member): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        members.insertValue(lift(event))
+    ctx
+      .run(
+        quote(
+          members.insertValue(lift(event))
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def delete(id: String): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        members.filter(_.id == lift(id)).delete
+    ctx
+      .run(
+        quote(
+          members.filter(_.id == lift(id)).delete
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 }
@@ -57,4 +67,3 @@ object MemberRepositoryPostgresImpl {
   val live: URLayer[DataSource, MemberRepository] =
     ZLayer.fromFunction(MemberRepositoryPostgresImpl(_))
 }
-

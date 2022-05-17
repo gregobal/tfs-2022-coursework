@@ -25,15 +25,23 @@ package object endpoint {
 
   val zioHttp: Http[AppServices, Throwable, Request, Response] =
     endpointsRegistry
-    .map(endpoint => ZioHttpInterpreter()
-      .toHttp(endpoint.asInstanceOf[ZServerEndpoint[AppServices, ZioStreams]]))
-    .reduce((a, b) => a ++ b)
+      .map(endpoint =>
+        ZioHttpInterpreter()
+          .toHttp(
+            endpoint.asInstanceOf[ZServerEndpoint[AppServices, ZioStreams]]
+          )
+      )
+      .reduce((a, b) => a ++ b)
 
   private type EffectType[A] = RIO[AppServices, A]
   val swagger: Http[AppServices, Throwable, Request, Response] =
     ZioHttpInterpreter[AppServices]().toHttp(
       SwaggerInterpreter()
-        .fromEndpoints[Task](endpointsRegistry.map(_.endpoint), "Eventus", "0.1.0")
+        .fromEndpoints[Task](
+          endpointsRegistry.map(_.endpoint),
+          "Eventus",
+          "0.1.0"
+        )
         .asInstanceOf[List[ServerEndpoint[ZioStreams, EffectType]]]
-  )
+    )
 }

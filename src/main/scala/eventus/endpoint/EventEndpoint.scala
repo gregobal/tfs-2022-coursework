@@ -3,12 +3,12 @@ package eventus.endpoint
 import eventus.dto.EventCreateDTO
 import eventus.model.Event
 import eventus.service.EventService
-import sttp.tapir.{endpoint, path, query}
-import sttp.tapir.generic.auto._
 import io.circe.generic.auto._
 import sttp.capabilities.zio.ZioStreams
+import sttp.tapir.generic.auto._
 import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.ztapir.{RichZEndpoint, ZServerEndpoint}
+import sttp.tapir.{endpoint, path, query}
 
 object EventEndpoint {
 
@@ -25,7 +25,6 @@ object EventEndpoint {
         EventService(_.getByCommunityId(communityId))
           .mapError(err => err.message)
       ),
-
     eventEndpoint.get
       .in(path[String]("id"))
       .out(jsonBody[Option[Event]])
@@ -34,7 +33,6 @@ object EventEndpoint {
         EventService(_.getById(id))
           .mapError(err => err.message)
       ),
-
     eventEndpoint.post
       .in(jsonBody[EventCreateDTO])
       .out(jsonBody[String])
@@ -43,7 +41,6 @@ object EventEndpoint {
         EventService(_.create(eventCreateDTO))
           .mapError(err => err.message)
       ),
-
     eventEndpoint.put
       .in(jsonBody[Event])
       .errorOut(jsonBody[String])

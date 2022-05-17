@@ -1,10 +1,10 @@
 package eventus
 
+import eventus.common.Migration.migrate
+import eventus.common.{AppConfig, DataSourceImpl}
 import eventus.endpoint.{swagger, zioHttp}
 import eventus.repository.{CommunityRepositoryPostgresImpl, EventRepositoryPostgresImpl, MemberRepositoryPostgresImpl, ParticipantRepositoryPostgresImpl}
 import eventus.service.{CommunityServiceImpl, EventServiceImpl, MemberServiceImpl, ParticipantServiceImpl}
-import eventus.common.{AppConfig, DataSourceImpl}
-import eventus.common.Migration.migrate
 import zhttp.service.Server
 import zio.{ExitCode, Scope, ZIO, ZIOAppArgs, ZIOAppDefault}
 

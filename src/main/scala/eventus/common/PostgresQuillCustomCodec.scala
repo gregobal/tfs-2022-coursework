@@ -9,5 +9,7 @@ object PostgresQuillCustomCodec {
   implicit val encodeZonedDateTime: MappedEncoding[ZonedDateTime, Date] =
     MappedEncoding[ZonedDateTime, Date](z => Date.from(z.toInstant))
   implicit val decodeZonedDateTime: MappedEncoding[Date, ZonedDateTime] =
-    MappedEncoding[Date, ZonedDateTime](date => ZonedDateTime.ofInstant(date.toInstant, ZoneId.systemDefault()))
+    MappedEncoding[Date, ZonedDateTime](date =>
+      ZonedDateTime.ofInstant(date.toInstant, ZoneId.systemDefault())
+    )
 }

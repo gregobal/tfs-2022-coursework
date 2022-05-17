@@ -8,7 +8,8 @@ object Migration {
     ZIO.serviceWithZIO[AppConfig] { appConfig =>
       val db = appConfig.database
       ZIO.attemptBlockingIO {
-        Flyway.configure()
+        Flyway
+          .configure()
           .dataSource(db.url, db.user, db.password)
           .load()
           .migrate()

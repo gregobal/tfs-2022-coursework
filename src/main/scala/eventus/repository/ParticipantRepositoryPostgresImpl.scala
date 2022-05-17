@@ -7,7 +7,8 @@ import zio.{IO, URLayer, ZLayer}
 
 import javax.sql.DataSource
 
-case class ParticipantRepositoryPostgresImpl(dataSource: DataSource) extends ParticipantRepository {
+case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
+    extends ParticipantRepository {
 
   private val ctx = new PostgresZioJdbcContext(SnakeCase)
   import ctx._
@@ -16,16 +17,23 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource) extends Par
     querySchema[Participant]("participant")
   )
 
-  override def filterById(id: String): IO[RepositoryError, Option[Participant]] =
-    ctx.run(
-      quote(
-        participants.filter(_.id == lift(id))
+  override def filterById(
+      id: String
+  ): IO[RepositoryError, Option[Participant]] =
+    ctx
+      .run(
+        quote(
+          participants.filter(_.id == lift(id))
+        )
       )
-    ).map(_.headOption)
+      .map(_.headOption)
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
-  override def filter(eventId: String, memberId: Option[String]): IO[RepositoryError, List[Participant]] = {
+  override def filter(
+      eventId: String,
+      memberId: Option[String]
+  ): IO[RepositoryError, List[Participant]] = {
     val participantByMember = memberId match {
       case Some(value) =>
         quote(
@@ -34,30 +42,35 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource) extends Par
       case None => participants
     }
 
-    ctx.run(
-      quote(
-        participantByMember.filter(_.eventId == lift(eventId))
+    ctx
+      .run(
+        quote(
+          participantByMember.filter(_.eventId == lift(eventId))
+        )
       )
-    )
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
   }
 
   override def insert(participant: Participant): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        participants.insertValue(lift(participant))
+    ctx
+      .run(
+        quote(
+          participants.insertValue(lift(participant))
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def delete(id: String): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        participants.filter(_.id == lift(id)).delete
+    ctx
+      .run(
+        quote(
+          participants.filter(_.id == lift(id)).delete
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 }

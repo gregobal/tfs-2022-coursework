@@ -6,7 +6,8 @@ import eventus.model.Community
 import eventus.repository.CommunityRepository
 import zio.{IO, URLayer, ZLayer}
 
-case class CommunityServiceImpl(repo: CommunityRepository) extends CommunityService {
+case class CommunityServiceImpl(repo: CommunityRepository)
+    extends CommunityService {
   override def getAll: IO[AppError, List[Community]] = {
     repo.queryAll
   }
@@ -15,7 +16,9 @@ case class CommunityServiceImpl(repo: CommunityRepository) extends CommunityServ
     repo.filterById(id)
   }
 
-  override def create(communityCreateDTO: CommunityCreateDTO): IO[AppError, String] = for {
+  override def create(
+      communityCreateDTO: CommunityCreateDTO
+  ): IO[AppError, String] = for {
     id <- zio.Random.nextUUID
     CommunityCreateDTO(name, description) = communityCreateDTO
     community = Community(id.toString, name, description)

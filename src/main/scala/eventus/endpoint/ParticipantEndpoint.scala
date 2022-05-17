@@ -5,10 +5,10 @@ import eventus.model.Participant
 import eventus.service.ParticipantService
 import io.circe.generic.auto._
 import sttp.capabilities.zio.ZioStreams
+import sttp.tapir._
 import sttp.tapir.generic.auto._
 import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.ztapir.{RichZEndpoint, ZServerEndpoint}
-import sttp.tapir._
 
 object ParticipantEndpoint {
 
@@ -17,7 +17,6 @@ object ParticipantEndpoint {
   // TODO - ошибки временно нсообщением к клиенту как есть, доработать
 
   val all: List[ZServerEndpoint[ParticipantService, ZioStreams]] = List(
-
     participantEndpoint.get
       .in(path[String]("id"))
       .out(jsonBody[Option[Participant]])
@@ -26,7 +25,6 @@ object ParticipantEndpoint {
         ParticipantService(_.getById(id))
           .mapError(err => err.message)
       ),
-
     participantEndpoint.get
       .in(query[String]("eventId").and(query[Option[String]]("memberId")))
       .out(jsonBody[List[Participant]])
@@ -35,7 +33,6 @@ object ParticipantEndpoint {
         ParticipantService(_.getByQueryParams(p._1, p._2))
           .mapError(err => err.message)
       ),
-
     participantEndpoint.post
       .in(jsonBody[ParticipantCreateDTO])
       .out(jsonBody[String])
@@ -44,7 +41,6 @@ object ParticipantEndpoint {
         ParticipantService(_.create(eventCreateDTO))
           .mapError(err => err.message)
       ),
-
     participantEndpoint.delete
       .in(path[String]("id"))
       .errorOut(jsonBody[String])

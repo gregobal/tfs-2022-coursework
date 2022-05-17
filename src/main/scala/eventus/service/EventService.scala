@@ -13,6 +13,3 @@ trait EventService {
 }
 
 object EventService extends Accessible[EventService]
-
-
-

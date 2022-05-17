@@ -7,7 +7,10 @@ import zio.{Accessible, IO}
 
 trait ParticipantService {
   def getById(id: String): IO[AppError, Option[Participant]]
-  def getByQueryParams(eventId: String, memberId: Option[String]): IO[AppError, List[Participant]]
+  def getByQueryParams(
+      eventId: String,
+      memberId: Option[String]
+  ): IO[AppError, List[Participant]]
   def create(participantCreateDTO: ParticipantCreateDTO): IO[AppError, String]
   def delete(id: String): IO[AppError, Unit]
 }

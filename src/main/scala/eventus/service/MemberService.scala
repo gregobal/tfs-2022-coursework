@@ -13,8 +13,3 @@ trait MemberService {
 }
 
 object MemberService extends Accessible[MemberService]
-
-
-
-
-

@@ -7,8 +7,11 @@ import zio.{IO, URLayer, ZLayer}
 
 import javax.sql.DataSource
 
-case class EventRepositoryPostgresImpl(dataSource: DataSource) extends EventRepository {
+case class EventRepositoryPostgresImpl(dataSource: DataSource)
+    extends EventRepository {
+
   import eventus.common.PostgresQuillCustomCodec.{encodeZonedDateTime, decodeZonedDateTime}
+
 
   private val ctx = new PostgresZioJdbcContext(SnakeCase)
   import ctx._
@@ -17,42 +20,51 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource) extends EventRepo
     querySchema[Event]("event")
   )
 
-  override def filterByCommunityId(communityId: String): IO[RepositoryError, List[Event]] =
-    ctx.run(
-      quote(
-        events.filter(_.communityId == lift(communityId))
+  override def filterByCommunityId(
+      communityId: String
+  ): IO[RepositoryError, List[Event]] =
+    ctx
+      .run(
+        quote(
+          events.filter(_.communityId == lift(communityId))
+        )
       )
-    )
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def filterById(id: String): IO[RepositoryError, Option[Event]] =
-    ctx.run(
-      quote(
-        events.filter(_.id == lift(id))
+    ctx
+      .run(
+        quote(
+          events.filter(_.id == lift(id))
+        )
       )
-    ).map(_.headOption)
+      .map(_.headOption)
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def insert(event: Event): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        events
-          .insertValue(lift(event))
+    ctx
+      .run(
+        quote(
+          events
+            .insertValue(lift(event))
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def update(event: Event): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        events
-          .filter(_.id == lift(event.id))
-          .updateValue(lift(event))
+    ctx
+      .run(
+        quote(
+          events
+            .filter(_.id == lift(event.id))
+            .updateValue(lift(event))
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 }

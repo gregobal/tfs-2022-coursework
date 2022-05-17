@@ -4,10 +4,12 @@ import eventus.dto.EventCreateDTO
 import eventus.error.AppError
 import eventus.model.Event
 import eventus.repository.EventRepository
-import zio.{IO, ZLayer, URLayer}
+import zio.{IO, URLayer, ZLayer}
 
 case class EventServiceImpl(repo: EventRepository) extends EventService {
-  override def getByCommunityId(communityId: String): IO[AppError, List[Event]] = {
+  override def getByCommunityId(
+      communityId: String
+  ): IO[AppError, List[Event]] = {
     repo.filterByCommunityId(communityId)
   }
 
@@ -15,12 +17,30 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
     repo.filterById(id)
   }
 
-  override def create(eventCreateDTO: EventCreateDTO): IO[AppError, String] = for {
-    id <- zio.Random.nextUUID
-    EventCreateDTO(communityId, title, description, datetime, location, link, capacity) = eventCreateDTO
-    event = Event(id.toString, communityId, title, description, datetime, location, link, capacity)
-    _ <- repo.insert(event)
-  } yield event.id
+  override def create(eventCreateDTO: EventCreateDTO): IO[AppError, String] =
+    for {
+      id <- zio.Random.nextUUID
+      EventCreateDTO(
+        communityId,
+        title,
+        description,
+        datetime,
+        location,
+        link,
+        capacity
+      ) = eventCreateDTO
+      event = Event(
+        id.toString,
+        communityId,
+        title,
+        description,
+        datetime,
+        location,
+        link,
+        capacity
+      )
+      _ <- repo.insert(event)
+    } yield event.id
 
   override def update(event: Event): IO[AppError, Unit] = {
     repo.update(event)
@@ -28,5 +48,6 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
 }
 
 object EventServiceImpl {
-  val live: URLayer[EventRepository, EventService] = ZLayer.fromFunction(EventServiceImpl(_))
+  val live: URLayer[EventRepository, EventService] =
+    ZLayer.fromFunction(EventServiceImpl(_))
 }

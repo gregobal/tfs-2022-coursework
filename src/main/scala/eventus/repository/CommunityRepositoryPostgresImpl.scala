@@ -7,7 +7,8 @@ import zio.{IO, URLayer, ZLayer}
 
 import javax.sql.DataSource
 
-case class CommunityRepositoryPostgresImpl(dataSource: DataSource) extends CommunityRepository {
+case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
+    extends CommunityRepository {
 
   private val ctx = new PostgresZioJdbcContext(SnakeCase)
   import ctx._
@@ -17,39 +18,46 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource) extends Commu
   )
 
   override def queryAll: IO[RepositoryError, List[Community]] =
-    ctx.run (
-      communities
-    )
-    .provideService(dataSource)
-    .mapError(ex => RepositoryError(ex))
+    ctx
+      .run(
+        communities
+      )
+      .provideService(dataSource)
+      .mapError(ex => RepositoryError(ex))
 
   override def filterById(id: String): IO[RepositoryError, Option[Community]] =
-    ctx.run(
-      quote(
-        communities.filter(_.id == lift(id))
+    ctx
+      .run(
+        quote(
+          communities.filter(_.id == lift(id))
+        )
       )
-    ).map(_.headOption)
+      .map(_.headOption)
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def insert(community: Community): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        communities
-          .insertValue(lift(community))
+    ctx
+      .run(
+        quote(
+          communities
+            .insertValue(lift(community))
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 
   override def update(community: Community): IO[RepositoryError, Unit] =
-    ctx.run(
-      quote(
-        communities
-          .filter(_.id == lift(community.id))
-          .updateValue(lift(community))
+    ctx
+      .run(
+        quote(
+          communities
+            .filter(_.id == lift(community.id))
+            .updateValue(lift(community))
+        )
       )
-    ).unit
+      .unit
       .provideService(dataSource)
       .mapError(ex => RepositoryError(ex))
 }
