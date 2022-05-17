@@ -37,7 +37,9 @@ ThisBuild / libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic"        % circeVersion,
   "io.circe" %% "circe-generic-extras" % circeVersion,
-  "io.circe" %% "circe-parser" % circeVersion
+  "io.circe" %% "circe-parser" % circeVersion,
+  //util
+  "io.scalaland" %% "chimney" % "0.6.1"
 )
 
 lazy val root = (project in file("."))

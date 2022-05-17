@@ -5,6 +5,7 @@ import eventus.error.AppError
 import eventus.model.Participant
 import eventus.repository.ParticipantRepository
 import zio.{IO, URLayer, ZLayer}
+import io.scalaland.chimney.dsl.TransformerOps
 
 case class ParticipantServiceImpl(repo: ParticipantRepository)
     extends ParticipantService {
@@ -24,8 +25,8 @@ case class ParticipantServiceImpl(repo: ParticipantRepository)
       participantCreateDTO: ParticipantCreateDTO
   ): IO[AppError, String] = for {
     id <- zio.Random.nextUUID
-    ParticipantCreateDTO(memberId, eventId) = participantCreateDTO
-    participant = Participant(id.toString, memberId, eventId)
+    participant = participantCreateDTO.into[Participant]
+      .withFieldConst(_.id, id.toString).transform
     _ <- repo.insert(participant)
   } yield participant.id
 

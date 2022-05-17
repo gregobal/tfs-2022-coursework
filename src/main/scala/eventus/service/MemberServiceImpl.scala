@@ -5,6 +5,7 @@ import eventus.error.AppError
 import eventus.model.Member
 import eventus.repository.MemberRepository
 import zio.{IO, URLayer, ZLayer}
+import io.scalaland.chimney.dsl.TransformerOps
 
 case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
   override def getByCommunityId(
@@ -20,8 +21,8 @@ case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
   override def create(memberCreateDTO: MemberCreateDTO): IO[AppError, String] =
     for {
       id <- zio.Random.nextUUID
-      MemberCreateDTO(email, communityId) = memberCreateDTO
-      member = Member(id.toString, email, communityId)
+      member = memberCreateDTO.into[Member]
+        .withFieldConst(_.id, id.toString).transform
       _ <- repo.insert(member)
     } yield member.id
 

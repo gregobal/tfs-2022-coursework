@@ -5,6 +5,7 @@ import eventus.error.AppError
 import eventus.model.Event
 import eventus.repository.EventRepository
 import zio.{IO, URLayer, ZLayer}
+import io.scalaland.chimney.dsl.TransformerOps
 
 case class EventServiceImpl(repo: EventRepository) extends EventService {
   override def getByCommunityId(
@@ -20,25 +21,8 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
   override def create(eventCreateDTO: EventCreateDTO): IO[AppError, String] =
     for {
       id <- zio.Random.nextUUID
-      EventCreateDTO(
-        communityId,
-        title,
-        description,
-        datetime,
-        location,
-        link,
-        capacity
-      ) = eventCreateDTO
-      event = Event(
-        id.toString,
-        communityId,
-        title,
-        description,
-        datetime,
-        location,
-        link,
-        capacity
-      )
+      event = eventCreateDTO.into[Event]
+        .withFieldConst(_.id, id.toString).transform
       _ <- repo.insert(event)
     } yield event.id
 
