@@ -1,4 +1,4 @@
-package eventus.util
+package eventus.common
 
 import io.getquill.MappedEncoding
 

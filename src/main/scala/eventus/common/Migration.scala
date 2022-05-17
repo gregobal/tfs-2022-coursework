@@ -1,10 +1,9 @@
-package eventus.util
+package eventus.common
 
-import eventus.config.AppConfig
 import org.flywaydb.core.Flyway
 import zio.{RIO, ZIO}
 
-object Migrations {
+object Migration {
   val migrate: RIO[AppConfig, Unit] = {
     ZIO.serviceWithZIO[AppConfig] { appConfig =>
       val db = appConfig.database

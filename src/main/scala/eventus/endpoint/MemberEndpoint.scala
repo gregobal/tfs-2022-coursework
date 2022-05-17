@@ -1,54 +1,54 @@
 package eventus.endpoint
 
-import eventus.dto.EventCreateDTO
-import eventus.model.Event
-import eventus.service.EventService
-import sttp.tapir.{endpoint, path, query}
-import sttp.tapir.generic.auto._
+import eventus.dto.MemberCreateDTO
+import eventus.model.Member
+import eventus.service.MemberService
 import io.circe.generic.auto._
 import sttp.capabilities.zio.ZioStreams
+import sttp.tapir.generic.auto._
 import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.ztapir.{RichZEndpoint, ZServerEndpoint}
+import sttp.tapir.{endpoint, path, query}
 
-object EventEndpoint {
+object MemberEndpoint {
 
-  private val eventEndpoint = endpoint.in("events")
+  private val memberEndpoint = endpoint.in("members")
 
   // TODO - ошибки временно нсообщением к клиенту как есть, доработать
 
-  val all: List[ZServerEndpoint[EventService, ZioStreams]] = List(
-    eventEndpoint.get
+  val all: List[ZServerEndpoint[MemberService, ZioStreams]] = List(
+    memberEndpoint.get
       .in(query[String]("communityId"))
-      .out(jsonBody[List[Event]])
+      .out(jsonBody[List[Member]])
       .errorOut(jsonBody[String])
       .zServerLogic(communityId =>
-        EventService(_.getByCommunityId(communityId))
+        MemberService(_.getByCommunityId(communityId))
           .mapError(err => err.message)
       ),
 
-    eventEndpoint.get
+    memberEndpoint.get
       .in(path[String]("id"))
-      .out(jsonBody[Option[Event]])
+      .out(jsonBody[Option[Member]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
-        EventService(_.getById(id))
+        MemberService(_.getById(id))
           .mapError(err => err.message)
       ),
 
-    eventEndpoint.post
-      .in(jsonBody[EventCreateDTO])
+    memberEndpoint.post
+      .in(jsonBody[MemberCreateDTO])
       .out(jsonBody[String])
       .errorOut(jsonBody[String])
       .zServerLogic(eventCreateDTO =>
-        EventService(_.create(eventCreateDTO))
+        MemberService(_.create(eventCreateDTO))
           .mapError(err => err.message)
       ),
 
-    eventEndpoint.put
-      .in(jsonBody[Event])
+    memberEndpoint.delete
+      .in(path[String]("id"))
       .errorOut(jsonBody[String])
-      .zServerLogic(eventCreateDTO =>
-        EventService(_.update(eventCreateDTO))
+      .zServerLogic(id =>
+        MemberService(_.delete(id))
           .mapError(err => err.message)
       )
   )

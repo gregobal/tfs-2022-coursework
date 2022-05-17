@@ -1,8 +1,8 @@
-package eventus.config
+package eventus.common
 
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import zio._
+import zio.{ULayer, ZIO, ZLayer}
 
 final case class DbConfig(
                            url: String,

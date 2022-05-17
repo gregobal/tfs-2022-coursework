@@ -2,10 +2,11 @@ package eventus.repository
 
 import eventus.error.RepositoryError
 import eventus.model.Event
-import zio._
+import zio.IO
 
 trait EventRepository {
-  def queryAll: IO[RepositoryError, List[Event]]
+  def filterByCommunityId(communityId: String): IO[RepositoryError, List[Event]]
   def filterById(id: String): IO[RepositoryError, Option[Event]]
-  def upsert(event: Event): IO[RepositoryError, Unit]
+  def insert(event: Event): IO[RepositoryError, Unit]
+  def update(event: Event): IO[RepositoryError, Unit]
 }

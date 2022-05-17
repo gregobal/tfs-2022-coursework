@@ -6,13 +6,13 @@ import eventus.model.Event
 import zio.{Accessible, IO}
 
 trait EventService {
-  def getAll: IO[AppError, List[Event]]
+  def getByCommunityId(communityId: String): IO[AppError, List[Event]]
   def getById(id: String): IO[AppError, Option[Event]]
   def create(eventCreateDTO: EventCreateDTO): IO[AppError, String]
   def update(event: Event): IO[AppError, Unit]
 }
 
-object EventService extends Accessible[EventService] {}
+object EventService extends Accessible[EventService]
 
 
 

@@ -4,6 +4,7 @@ import java.time.ZonedDateTime
 
 case class Event(
                   id: String,
+                  communityId: String,
                   title: String,
                   description: Option[String],
                   datetime: ZonedDateTime,

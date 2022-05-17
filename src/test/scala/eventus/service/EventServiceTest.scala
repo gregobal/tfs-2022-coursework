@@ -16,6 +16,7 @@ object EventServiceTests extends ZIOSpecDefault {
     test("getById") {
       val expected = Event(
         "3a917bdd-84d0-4e22-b55c-bc52f063c821",
+        "4a917bdd-84d0-4e22-b55c-bc52f063c822",
         "test",
         Some("description"),
         ZonedDateTime.now(),
@@ -25,7 +26,7 @@ object EventServiceTests extends ZIOSpecDefault {
       )
 
       (for {
-        _      <- ZIO.serviceWithZIO[EventRepository](_.upsert(expected))
+        _      <- ZIO.serviceWithZIO[EventRepository](_.insert(expected))
         result <- EventService(_.getById(expected.id))
       } yield assert(result)(isSome)).provideLayer(testLayer)
     }
@@ -40,7 +41,7 @@ class InMemoryEventRepository extends EventRepository {
 
   private val map = new TrieMap[String, Event]()
 
-  def queryAll: IO[RepositoryError, List[Event]] = IO.succeed(
+  def filterByCommunityId(communityId: String): IO[RepositoryError, List[Event]] = IO.succeed(
     map.values.toList
   )
 
@@ -48,11 +49,15 @@ class InMemoryEventRepository extends EventRepository {
     map.get(id)
   )
 
-  def upsert(event: Event): IO[RepositoryError, Unit] = {
-    IO.succeed {
+  def insert(event: Event): IO[RepositoryError, Unit] = IO.succeed {
       map.put(event.id, event)
       ()
-    }
+  }
+
+
+  override def update(event: Event): IO[RepositoryError, Unit] = IO.succeed {
+    map.replace(event.id, event)
+    ()
   }
 }
 
