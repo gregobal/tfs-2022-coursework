@@ -1,20 +1,19 @@
 package eventus.service
 
+import eventus.common.types.{CommunityId, MemberId}
 import eventus.dto.MemberCreateDTO
 import eventus.error.AppError
 import eventus.model.Member
 import zio.{Accessible, IO}
 
-import java.util.UUID
-
 trait MemberService {
-  def getByCommunityId(communityId: UUID): IO[AppError, List[Member]]
-  def getById(id: UUID): IO[AppError, Option[Member]]
+  def getByCommunityId(communityId: CommunityId): IO[AppError, List[Member]]
+  def getById(id: MemberId): IO[AppError, Option[Member]]
   def create(
-      communityId: UUID,
+      communityId: CommunityId,
       memberCreateDTO: MemberCreateDTO
-  ): IO[AppError, UUID]
-  def delete(id: UUID): IO[AppError, Unit]
+  ): IO[AppError, MemberId]
+  def delete(id: MemberId): IO[AppError, Unit]
 }
 
 object MemberService extends Accessible[MemberService]

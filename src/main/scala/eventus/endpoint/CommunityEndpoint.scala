@@ -1,5 +1,6 @@
 package eventus.endpoint
 
+import eventus.common.types.CommunityId
 import eventus.dto.CommunityCreateDTO
 import eventus.model.Community
 import eventus.service.CommunityService
@@ -31,12 +32,12 @@ object CommunityEndpoint {
       .out(jsonBody[Option[Community]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
-        CommunityService(_.getById(id))
+        CommunityService(_.getById(CommunityId(id)))
           .mapError(err => err.message)
       ),
     communityEndpointRoot.post
       .in(jsonBody[CommunityCreateDTO])
-      .out(jsonBody[UUID])
+      .out(jsonBody[CommunityId])
       .errorOut(jsonBody[String])
       .zServerLogic(communityCreateDTO =>
         CommunityService(_.create(communityCreateDTO))

@@ -1,5 +1,6 @@
 package eventus.service
 
+import eventus.common.types.{CommunityId, EventId}
 import eventus.error.RepositoryError
 import eventus.model.Event
 import eventus.repository.EventRepository
@@ -16,8 +17,8 @@ object EventServiceTests extends ZIOSpecDefault {
     suite("event service tests")(
       test("getById") {
         val expected = Event(
-          UUID.fromString("3a917bdd-84d0-4e22-b55c-bc52f063c821"),
-          UUID.fromString("4a917bdd-84d0-4e22-b55c-bc52f063c822"),
+          EventId(UUID.fromString("3a917bdd-84d0-4e22-b55c-bc52f063c821")),
+          CommunityId(UUID.fromString("4a917bdd-84d0-4e22-b55c-bc52f063c822")),
           "test",
           Some("description"),
           ZonedDateTime.now(),
@@ -39,15 +40,15 @@ object EventServiceTests extends ZIOSpecDefault {
 
 class InMemoryEventRepository extends EventRepository {
 
-  private val map = new TrieMap[UUID, Event]()
+  private val map = new TrieMap[EventId, Event]()
 
   override def getAllOrFilterByCommunityId(
-      communityIdOpt: Option[UUID]
+      communityIdOpt: Option[CommunityId]
   ): IO[RepositoryError, List[Event]] = IO.succeed(
     map.values.toList
   )
 
-  def filterById(id: UUID): IO[RepositoryError, Option[Event]] = IO.succeed(
+  def filterById(id: EventId): IO[RepositoryError, Option[Event]] = IO.succeed(
     map.get(id)
   )
 

@@ -1,15 +1,14 @@
 package eventus.repository
 
+import eventus.common.types.{EventId, MemberId}
 import eventus.error.RepositoryError
 import eventus.model.Participant
 import zio.IO
 
-import java.util.UUID
-
 trait ParticipantRepository {
   def filter(
-      eventId: UUID,
-      memberId: Option[UUID]
+      eventId: EventId,
+      memberId: Option[MemberId]
   ): IO[RepositoryError, List[Participant]]
   def insert(participant: Participant): IO[RepositoryError, Unit]
   def delete(participant: Participant): IO[RepositoryError, Unit]

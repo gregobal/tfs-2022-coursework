@@ -3,6 +3,7 @@ package eventus.service
 import eventus.error.AppError
 import eventus.model.Participant
 import eventus.repository.ParticipantRepository
+import eventus.common.types.{EventId, MemberId}
 import zio.{IO, URLayer, ZLayer}
 
 import java.util.UUID
@@ -11,18 +12,21 @@ case class ParticipantServiceImpl(repo: ParticipantRepository)
     extends ParticipantService {
 
   def getByEventIdAndFilterByMemberId(
-      eventId: UUID,
-      memberId: Option[UUID]
+      eventId: EventId,
+      memberId: Option[MemberId]
   ): IO[AppError, List[Participant]] = {
     repo.filter(eventId, memberId)
   }
 
-  override def create(eventId: UUID, memberId: UUID): IO[AppError, Unit] = {
-    repo.insert(Participant(eventId, memberId))
+  override def create(
+      eventId: EventId,
+      memberId: MemberId
+  ): IO[AppError, Unit] = {
+    repo.insert(Participant(memberId, eventId))
   }
 
-  def delete(eventId: UUID, memberId: UUID): IO[AppError, Unit] = {
-    repo.delete(Participant(eventId, memberId))
+  def delete(eventId: EventId, memberId: MemberId): IO[AppError, Unit] = {
+    repo.delete(Participant(memberId, eventId))
   }
 }
 

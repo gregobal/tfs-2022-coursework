@@ -1,5 +1,6 @@
 package eventus.service
 
+import eventus.common.types.CommunityId
 import eventus.dto.CommunityCreateDTO
 import eventus.error.{AppError, ServiceError}
 import eventus.model.Community
@@ -16,17 +17,17 @@ case class CommunityServiceImpl(repo: CommunityRepository)
     repo.queryAll
   }
 
-  override def getById(id: UUID): IO[AppError, Option[Community]] = {
+  override def getById(id: CommunityId): IO[AppError, Option[Community]] = {
     repo.filterById(id)
   }
 
   override def create(
       communityCreateDTO: CommunityCreateDTO
-  ): IO[AppError, UUID] = for {
+  ): IO[AppError, CommunityId] = for {
     id <- zio.Random.nextUUID
     community = communityCreateDTO
       .into[Community]
-      .withFieldConst(_.id, id)
+      .withFieldConst(_.id, CommunityId(id))
       .transform
     _ <- repo.insert(community)
   } yield community.id
@@ -43,7 +44,6 @@ case class CommunityServiceImpl(repo: CommunityRepository)
           val words = URLDecoder
             .decode(string, "UTF-8")
             .split("\\s")
-            .tapEach(println)
             .toList
             .filter(_.length > 1)
             .map(w => s"%${w.toLowerCase}%")

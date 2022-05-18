@@ -39,7 +39,8 @@ ThisBuild / libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic-extras" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
   //util
-  "io.scalaland" %% "chimney" % "0.6.1"
+  "io.scalaland" %% "chimney" % "0.6.1",
+  "io.estatico" %% "newtype" % "0.4.4"
 )
 
 lazy val root = (project in file("."))
@@ -48,8 +49,11 @@ lazy val root = (project in file("."))
   )
 
 scalacOptions ++= Seq(
+  "-Ymacro-annotations",
+  "-language:implicitConversions",
   "-Xfatal-warnings",
-  "-deprecation"
+  "-deprecation",
+  "-feature"
 )
 
 // deployment

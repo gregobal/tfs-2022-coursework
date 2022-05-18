@@ -1,9 +1,9 @@
 package eventus.model
 
-import java.util.UUID
+import eventus.common.types.{CommunityId, MemberId}
 
 case class Member(
-    id: UUID,
+    id: MemberId,
     email: String,
-    communityId: UUID
+    communityId: CommunityId
 )

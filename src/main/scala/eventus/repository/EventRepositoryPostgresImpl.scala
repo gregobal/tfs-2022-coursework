@@ -1,12 +1,13 @@
 package eventus.repository
 
+import eventus.common.types.{CommunityId, EventId}
 import eventus.error.RepositoryError
 import eventus.model.Event
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
 import java.time.{ZoneId, ZonedDateTime}
-import java.util.{Date, UUID}
+import java.util.Date
 import javax.sql.DataSource
 
 case class EventRepositoryPostgresImpl(dataSource: DataSource)
@@ -20,7 +21,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
   )
 
   override def getAllOrFilterByCommunityId(
-      communityIdOpt: Option[UUID]
+      communityIdOpt: Option[CommunityId]
   ): IO[RepositoryError, List[Event]] = {
     val filter = communityIdOpt match {
       case Some(value) =>
@@ -39,7 +40,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
       .mapError(RepositoryError)
   }
 
-  override def filterById(id: UUID): IO[RepositoryError, Option[Event]] =
+  override def filterById(id: EventId): IO[RepositoryError, Option[Event]] =
     ctx
       .run(
         quote(

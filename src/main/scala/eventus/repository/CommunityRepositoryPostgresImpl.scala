@@ -1,11 +1,11 @@
 package eventus.repository
 
+import eventus.common.types.CommunityId
 import eventus.error.RepositoryError
 import eventus.model.Community
 import io.getquill.{PostgresZioJdbcContext, Query, SnakeCase}
-import zio.{IO, URLayer, ZLayer}
+import zio.{IO, URLayer, ZIO, ZLayer}
 
-import java.util.UUID
 import javax.sql.DataSource
 
 case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
@@ -27,16 +27,19 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
       .mapError(RepositoryError)
 
   override def filterById(
-      id: UUID
+      id: CommunityId
   ): IO[RepositoryError, Option[Community]] =
     ctx
       .run(
         quote(
-          communities.filter(_.id == lift(id))
+          communities.filter(
+            _.id == lift(id)
+          )
         )
       )
       .map(_.headOption)
       .provideService(dataSource)
+      .tapError(err => ZIO.log(err.getMessage))
       .mapError(RepositoryError)
 
   override def insert(community: Community): IO[RepositoryError, Unit] =

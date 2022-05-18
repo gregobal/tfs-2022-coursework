@@ -2,6 +2,7 @@ package eventus.repository
 
 import eventus.error.RepositoryError
 import eventus.model.Participant
+import eventus.common.types.{EventId, MemberId}
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
@@ -19,8 +20,8 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
   )
 
   override def filter(
-      eventId: UUID,
-      memberId: Option[UUID]
+      eventId: EventId,
+      memberId: Option[MemberId]
   ): IO[RepositoryError, List[Participant]] = {
     val participantByMember = memberId match {
       case Some(value) =>

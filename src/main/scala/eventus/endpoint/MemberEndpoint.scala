@@ -1,5 +1,6 @@
 package eventus.endpoint
 
+import eventus.common.types.{CommunityId, MemberId}
 import eventus.dto.MemberCreateDTO
 import eventus.endpoint.CommunityEndpoint.communityEndpointRoot
 import eventus.model.Member
@@ -24,18 +25,18 @@ object MemberEndpoint {
       .in("members")
       .out(jsonBody[List[Member]])
       .errorOut(jsonBody[String])
-      .zServerLogic(communityId =>
-        MemberService(_.getByCommunityId(communityId))
+      .zServerLogic(uuid =>
+        MemberService(_.getByCommunityId(CommunityId(uuid)))
           .mapError(err => err.message)
       ),
     communityEndpointRoot.post
       .in(path[UUID]("communityId"))
       .in("members")
       .in(jsonBody[MemberCreateDTO])
-      .out(jsonBody[UUID])
+      .out(jsonBody[MemberId])
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
-        MemberService(_.create(p._1, p._2))
+        MemberService(_.create(CommunityId(p._1), p._2))
           .mapError(err => err.message)
       ),
     memberEndpointRoot.get
@@ -43,14 +44,14 @@ object MemberEndpoint {
       .out(jsonBody[Option[Member]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
-        MemberService(_.getById(id))
+        MemberService(_.getById(MemberId(id)))
           .mapError(err => err.message)
       ),
     memberEndpointRoot.delete
       .in(path[UUID]("id"))
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
-        MemberService(_.delete(id))
+        MemberService(_.delete(MemberId(id)))
           .mapError(err => err.message)
       )
   )

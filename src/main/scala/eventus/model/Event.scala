@@ -1,15 +1,17 @@
 package eventus.model
 
+import eventus.common.types.{CommunityId, EventId}
+
 import java.time.ZonedDateTime
-import java.util.UUID
 
 case class Event(
-    id: UUID,
-    communityId: UUID,
+    id: EventId,
+    communityId: CommunityId,
     title: String,
     description: Option[String],
     datetime: ZonedDateTime,
     location: Option[String],
+    // TODO - change String to URL
     link: Option[String],
     capacity: Option[Int]
 )

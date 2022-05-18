@@ -1,11 +1,11 @@
 package eventus.repository
 
+import eventus.common.types.{CommunityId, MemberId}
 import eventus.error.RepositoryError
 import eventus.model.Member
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
-import java.util.UUID
 import javax.sql.DataSource
 
 case class MemberRepositoryPostgresImpl(dataSource: DataSource)
@@ -19,7 +19,7 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
   )
 
   override def filterByCommunityId(
-      communityId: UUID
+      communityId: CommunityId
   ): IO[RepositoryError, List[Member]] =
     ctx
       .run(
@@ -30,7 +30,7 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
       .provideService(dataSource)
       .mapError(RepositoryError)
 
-  override def filterById(id: UUID): IO[RepositoryError, Option[Member]] =
+  override def filterById(id: MemberId): IO[RepositoryError, Option[Member]] =
     ctx
       .run(
         quote(
@@ -52,7 +52,7 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
       .provideService(dataSource)
       .mapError(RepositoryError)
 
-  override def delete(id: UUID): IO[RepositoryError, Unit] =
+  override def delete(id: MemberId): IO[RepositoryError, Unit] =
     ctx
       .run(
         quote(
