@@ -12,6 +12,7 @@ trait CommunityService {
   def getById(id: UUID): IO[AppError, Option[Community]]
   def create(communityCreateDTO: CommunityCreateDTO): IO[AppError, UUID]
   def update(community: Community): IO[AppError, Unit]
+  def search(string: String): IO[AppError, List[Community]]
 }
 
 object CommunityService extends Accessible[CommunityService]

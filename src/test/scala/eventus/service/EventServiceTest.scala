@@ -8,6 +8,7 @@ import zio.test.{ZIOSpecDefault, _}
 import zio.{IO, ULayer, ZIO, ZLayer}
 
 import java.time.ZonedDateTime
+import java.util.UUID
 import scala.collection.concurrent.TrieMap
 
 object EventServiceTests extends ZIOSpecDefault {
@@ -15,8 +16,8 @@ object EventServiceTests extends ZIOSpecDefault {
     suite("event service tests")(
       test("getById") {
         val expected = Event(
-          "3a917bdd-84d0-4e22-b55c-bc52f063c821",
-          "4a917bdd-84d0-4e22-b55c-bc52f063c822",
+          UUID.fromString("3a917bdd-84d0-4e22-b55c-bc52f063c821"),
+          UUID.fromString("4a917bdd-84d0-4e22-b55c-bc52f063c822"),
           "test",
           Some("description"),
           ZonedDateTime.now(),
@@ -38,15 +39,15 @@ object EventServiceTests extends ZIOSpecDefault {
 
 class InMemoryEventRepository extends EventRepository {
 
-  private val map = new TrieMap[String, Event]()
+  private val map = new TrieMap[UUID, Event]()
 
-  def filterByCommunityId(
-      communityId: String
+  override def getAllOrFilterByCommunityId(
+      communityIdOpt: Option[UUID]
   ): IO[RepositoryError, List[Event]] = IO.succeed(
     map.values.toList
   )
 
-  def filterById(id: String): IO[RepositoryError, Option[Event]] = IO.succeed(
+  def filterById(id: UUID): IO[RepositoryError, Option[Event]] = IO.succeed(
     map.get(id)
   )
 

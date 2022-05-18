@@ -28,7 +28,7 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
         )
       )
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def filterById(id: UUID): IO[RepositoryError, Option[Member]] =
     ctx
@@ -39,7 +39,7 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
       )
       .map(_.headOption)
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def insert(event: Member): IO[RepositoryError, Unit] =
     ctx
@@ -50,7 +50,7 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def delete(id: UUID): IO[RepositoryError, Unit] =
     ctx
@@ -61,7 +61,7 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 }
 
 object MemberRepositoryPostgresImpl {

@@ -2,7 +2,7 @@ package eventus.repository
 
 import eventus.error.RepositoryError
 import eventus.model.Community
-import io.getquill.{PostgresZioJdbcContext, SnakeCase}
+import io.getquill.{PostgresZioJdbcContext, Query, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
 import java.util.UUID
@@ -24,7 +24,7 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
         communities
       )
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def filterById(
       id: UUID
@@ -37,7 +37,7 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
       )
       .map(_.headOption)
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def insert(community: Community): IO[RepositoryError, Unit] =
     ctx
@@ -49,7 +49,7 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def update(community: Community): IO[RepositoryError, Unit] =
     ctx
@@ -62,7 +62,19 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
+
+  override def likeByWordsArray(
+      words: Seq[String]
+  ): IO[RepositoryError, List[Community]] = {
+    val rawQuery = quote { (w: Seq[String]) =>
+      infix"""
+          SELECT * FROM community WHERE name ilike any ($w) OR description ilike any ($w)
+        """.as[Query[Community]]
+    }
+    ctx.run(rawQuery(lift(words)))
+  }.provideService(dataSource)
+    .mapError(RepositoryError)
 }
 
 object CommunityRepositoryPostgresImpl {

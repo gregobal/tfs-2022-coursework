@@ -1,6 +1,12 @@
 package eventus
 
-import eventus.service.{CommunityService, EventService, MemberService, ParticipantService}
+import eventus.service.{
+  CommunityService,
+  EventService,
+  MemberService,
+  NotificationService,
+  ParticipantService
+}
 import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.server.ziohttp.ZioHttpInterpreter
@@ -15,6 +21,7 @@ package object endpoint {
       with CommunityService
       with MemberService
       with ParticipantService
+      with NotificationService
 
   private val endpointsRegistry = List(
     EventEndpoint.all,

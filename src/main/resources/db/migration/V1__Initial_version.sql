@@ -23,7 +23,7 @@ create table if not exists event
     capacity     integer,
     constraint event_community_id_fk
         foreign key (community_id) references community (id)
-            on update cascade on delete cascade
+            on update cascade on delete set null
 );
 
 comment on table event is 'Мероприятие, проводится в рамках сообщества с участием его членов';
@@ -38,19 +38,17 @@ create table member
 
     constraint member_community_id_fk
         foreign key (community_id) references community (id)
-            on update cascade on delete cascade
+            on update cascade on delete set null
 );
 
 comment on table member is 'Член сообщества';
 
 create table participant
 (
-    id        uuid not null
-        constraint participant_pk
-            primary key,
     member_id uuid not null,
     event_id  uuid not null,
-
+    constraint participant_pk
+        primary key (member_id, event_id),
     constraint member_id_fk
         foreign key (member_id) references member (id)
             on update cascade on delete cascade,

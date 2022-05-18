@@ -11,4 +11,7 @@ trait CommunityRepository {
   def filterById(id: UUID): IO[RepositoryError, Option[Community]]
   def insert(community: Community): IO[RepositoryError, Unit]
   def update(community: Community): IO[RepositoryError, Unit]
+  def likeByWordsArray(
+      words: Seq[String]
+  ): IO[RepositoryError, List[Community]]
 }

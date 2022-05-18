@@ -7,8 +7,8 @@ import zio.IO
 import java.util.UUID
 
 trait EventRepository {
-  def filterByCommunityId(
-      communityId: UUID
+  def getAllOrFilterByCommunityId(
+      communityIdOpt: Option[UUID]
   ): IO[RepositoryError, List[Event]]
   def filterById(id: UUID): IO[RepositoryError, Option[Event]]
   def insert(event: Event): IO[RepositoryError, Unit]

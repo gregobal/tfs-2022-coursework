@@ -8,24 +8,25 @@ import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.generic.auto._
 import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.ztapir.{RichZEndpoint, ZServerEndpoint}
-import sttp.tapir.{endpoint, path}
+import sttp.tapir.{endpoint, path, query}
 
 import java.util.UUID
 
 object CommunityEndpoint {
 
-  private val communityEndpoint = endpoint.in("communities")
+  private[endpoint] val communityEndpointRoot =
+    endpoint.in("communities").tag("Community")
 
   // TODO - ошибки временно нсообщением к клиенту как есть, доработать
   val all: List[ZServerEndpoint[CommunityService, ZioStreams]] = List(
-    communityEndpoint.get
+    communityEndpointRoot.get
       .out(jsonBody[List[Community]])
       .errorOut(jsonBody[String])
       .zServerLogic(_ =>
         CommunityService(_.getAll)
           .mapError(err => err.message)
       ),
-    communityEndpoint.get
+    communityEndpointRoot.get
       .in(path[UUID]("id"))
       .out(jsonBody[Option[Community]])
       .errorOut(jsonBody[String])
@@ -33,7 +34,7 @@ object CommunityEndpoint {
         CommunityService(_.getById(id))
           .mapError(err => err.message)
       ),
-    communityEndpoint.post
+    communityEndpointRoot.post
       .in(jsonBody[CommunityCreateDTO])
       .out(jsonBody[UUID])
       .errorOut(jsonBody[String])
@@ -41,11 +42,20 @@ object CommunityEndpoint {
         CommunityService(_.create(communityCreateDTO))
           .mapError(err => err.message)
       ),
-    communityEndpoint.put
+    communityEndpointRoot.put
       .in(jsonBody[Community])
       .errorOut(jsonBody[String])
       .zServerLogic(community =>
         CommunityService(_.update(community))
+          .mapError(err => err.message)
+      ),
+    communityEndpointRoot.get
+      .in("search")
+      .in(query[String]("q"))
+      .out(jsonBody[List[Community]])
+      .errorOut(jsonBody[String])
+      .zServerLogic(q =>
+        CommunityService(_.search(q))
           .mapError(err => err.message)
       )
   )

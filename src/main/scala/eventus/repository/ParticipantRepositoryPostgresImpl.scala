@@ -18,19 +18,6 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
     querySchema[Participant]("participant")
   )
 
-  override def filterById(
-      id: UUID
-  ): IO[RepositoryError, Option[Participant]] =
-    ctx
-      .run(
-        quote(
-          participants.filter(_.id == lift(id))
-        )
-      )
-      .map(_.headOption)
-      .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
-
   override def filter(
       eventId: UUID,
       memberId: Option[UUID]
@@ -50,7 +37,7 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
         )
       )
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
   }
 
   override def insert(participant: Participant): IO[RepositoryError, Unit] =
@@ -62,18 +49,24 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
-  override def delete(id: UUID): IO[RepositoryError, Unit] =
+  override def delete(participant: Participant): IO[RepositoryError, Unit] =
     ctx
       .run(
         quote(
-          participants.filter(_.id == lift(id)).delete
+          participants
+            .filter(p =>
+              p.eventId == lift(participant.eventId) && p.memberId == lift(
+                participant.memberId
+              )
+            )
+            .delete
         )
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 }
 
 object ParticipantRepositoryPostgresImpl {

@@ -5,16 +5,12 @@ import eventus.model.Event
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
-import java.util.UUID
+import java.time.{ZoneId, ZonedDateTime}
+import java.util.{Date, UUID}
 import javax.sql.DataSource
 
 case class EventRepositoryPostgresImpl(dataSource: DataSource)
     extends EventRepository {
-
-  import eventus.common.PostgresQuillCustomCodec.{
-    encodeZonedDateTime,
-    decodeZonedDateTime
-  }
 
   private val ctx = new PostgresZioJdbcContext(SnakeCase)
   import ctx._
@@ -23,17 +19,25 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
     querySchema[Event]("event")
   )
 
-  override def filterByCommunityId(
-      communityId: UUID
-  ): IO[RepositoryError, List[Event]] =
+  override def getAllOrFilterByCommunityId(
+      communityIdOpt: Option[UUID]
+  ): IO[RepositoryError, List[Event]] = {
+    val filter = communityIdOpt match {
+      case Some(value) =>
+        quote(
+          events.filter(_.communityId == lift(value))
+        )
+      case None => events
+    }
     ctx
       .run(
         quote(
-          events.filter(_.communityId == lift(communityId))
+          filter
         )
       )
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
+  }
 
   override def filterById(id: UUID): IO[RepositoryError, Option[Event]] =
     ctx
@@ -44,7 +48,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
       )
       .map(_.headOption)
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def insert(event: Event): IO[RepositoryError, Unit] =
     ctx
@@ -56,7 +60,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
 
   override def update(event: Event): IO[RepositoryError, Unit] =
     ctx
@@ -69,7 +73,16 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
       )
       .unit
       .provideService(dataSource)
-      .mapError(ex => RepositoryError(ex))
+      .mapError(RepositoryError)
+
+  private implicit val encodeZonedDateTime
+      : MappedEncoding[ZonedDateTime, Date] =
+    MappedEncoding[ZonedDateTime, Date](z => Date.from(z.toInstant))
+  private implicit val decodeZonedDateTime
+      : MappedEncoding[Date, ZonedDateTime] =
+    MappedEncoding[Date, ZonedDateTime](date =>
+      ZonedDateTime.ofInstant(date.toInstant, ZoneId.systemDefault())
+    )
 }
 
 object EventRepositoryPostgresImpl {

@@ -21,6 +21,7 @@ case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
   }
 
   override def create(
+      communityId: UUID,
       memberCreateDTO: MemberCreateDTO
   ): IO[AppError, UUID] =
     for {
@@ -28,6 +29,7 @@ case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
       member = memberCreateDTO
         .into[Member]
         .withFieldConst(_.id, id)
+        .withFieldConst(_.communityId, communityId)
         .transform
       _ <- repo.insert(member)
     } yield member.id

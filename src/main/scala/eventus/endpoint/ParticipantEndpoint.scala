@@ -1,6 +1,6 @@
 package eventus.endpoint
 
-import eventus.dto.ParticipantCreateDTO
+import eventus.endpoint.EventEndpoint.eventEndpointRoot
 import eventus.model.Participant
 import eventus.service.ParticipantService
 import io.circe.generic.auto._
@@ -14,40 +14,37 @@ import java.util.UUID
 
 object ParticipantEndpoint {
 
-  private val participantEndpoint = endpoint.in("participants")
+  private val eventId = path[UUID]("eventId")
+  private val memberId = path[UUID]("eventId")
 
   // TODO - ошибки временно нсообщением к клиенту как есть, доработать
-
   val all: List[ZServerEndpoint[ParticipantService, ZioStreams]] = List(
-    participantEndpoint.get
-      .in(path[UUID]("id"))
-      .out(jsonBody[Option[Participant]])
-      .errorOut(jsonBody[String])
-      .zServerLogic(id =>
-        ParticipantService(_.getById(id))
-          .mapError(err => err.message)
-      ),
-    participantEndpoint.get
-      .in(query[UUID]("eventId").and(query[Option[UUID]]("memberId")))
+    eventEndpointRoot.get
+      .in(eventId)
+      .in("participants")
+      .in(query[Option[UUID]]("memberId"))
       .out(jsonBody[List[Participant]])
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
-        ParticipantService(_.getByQueryParams(p._1, p._2))
+        ParticipantService(_.getByEventIdAndFilterByMemberId(p._1, p._2))
           .mapError(err => err.message)
       ),
-    participantEndpoint.post
-      .in(jsonBody[ParticipantCreateDTO])
-      .out(jsonBody[UUID])
+    eventEndpointRoot.post
+      .in(eventId)
+      .in("register")
+      .in(memberId)
       .errorOut(jsonBody[String])
-      .zServerLogic(eventCreateDTO =>
-        ParticipantService(_.create(eventCreateDTO))
+      .zServerLogic(p =>
+        ParticipantService(_.create(p._1, p._2))
           .mapError(err => err.message)
       ),
-    participantEndpoint.delete
-      .in(path[UUID]("id"))
+    eventEndpointRoot.delete
+      .in(path[UUID]("eventId"))
+      .in("unregister")
+      .in(memberId)
       .errorOut(jsonBody[String])
-      .zServerLogic(id =>
-        ParticipantService(_.delete(id))
+      .zServerLogic(p =>
+        ParticipantService(_.delete(p._1, p._2))
           .mapError(err => err.message)
       )
   )

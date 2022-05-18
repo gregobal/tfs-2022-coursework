@@ -7,3 +7,7 @@ sealed trait AppError {
 case class RepositoryError(throwable: Throwable) extends AppError {
   override val message: String = throwable.getMessage
 }
+
+case class ServiceError(throwable: Throwable) extends AppError {
+  override val message: String = throwable.getMessage
+}
