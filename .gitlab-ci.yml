@@ -6,7 +6,7 @@ stages:          # List of stages for jobs, and their order of execution
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy
   only:
-    - develop
+    - main
   variables:
     HEROKU_API_KEY: $HEROKU_API_KEY
   script:
