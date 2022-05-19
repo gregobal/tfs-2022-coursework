@@ -1,8 +1,9 @@
 package eventus.endpoint
 
+import eventus.common.AppError.handleServerLogicError
+import eventus.common.types.{EventId, MemberId}
 import eventus.endpoint.EventEndpoint.eventEndpointRoot
 import eventus.model.Participant
-import eventus.common.types.{EventId, MemberId}
 import eventus.service.ParticipantService
 import io.circe.generic.auto._
 import sttp.capabilities.zio.ZioStreams
@@ -27,13 +28,14 @@ object ParticipantEndpoint {
       .out(jsonBody[List[Participant]])
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
-        ParticipantService(
-          _.getByEventIdAndFilterByMemberId(
-            EventId(p._1),
-            p._2.map(MemberId(_))
+        handleServerLogicError(
+          ParticipantService(
+            _.getByEventIdAndFilterByMemberId(
+              EventId(p._1),
+              p._2.map(MemberId(_))
+            )
           )
         )
-          .mapError(err => err.message)
       ),
     eventEndpointRoot.post
       .in(eventId)
@@ -41,8 +43,9 @@ object ParticipantEndpoint {
       .in(memberId)
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
-        ParticipantService(_.create(EventId(p._1), MemberId(p._2)))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          ParticipantService(_.create(EventId(p._1), MemberId(p._2)))
+        )
       ),
     eventEndpointRoot.delete
       .in(path[UUID]("eventId"))
@@ -50,8 +53,9 @@ object ParticipantEndpoint {
       .in(memberId)
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
-        ParticipantService(_.delete(EventId(p._1), MemberId(p._2)))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          ParticipantService(_.delete(EventId(p._1), MemberId(p._2)))
+        )
       )
   )
 

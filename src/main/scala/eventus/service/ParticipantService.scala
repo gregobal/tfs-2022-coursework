@@ -1,6 +1,6 @@
 package eventus.service
 
-import eventus.error.AppError
+import eventus.common.AppError
 import eventus.model.Participant
 import eventus.common.types.{EventId, MemberId}
 import zio.{Accessible, IO}

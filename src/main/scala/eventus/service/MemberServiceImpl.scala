@@ -1,8 +1,8 @@
 package eventus.service
 
+import eventus.common.AppError
 import eventus.common.types.{CommunityId, MemberId}
 import eventus.dto.MemberCreateDTO
-import eventus.error.AppError
 import eventus.model.Member
 import eventus.repository.MemberRepository
 import io.scalaland.chimney.dsl.TransformerOps

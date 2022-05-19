@@ -1,6 +1,6 @@
 package eventus.service
 
-import eventus.error.AppError
+import eventus.common.AppError
 import eventus.model.Event
 import zio.{Accessible, ULayer, ZIO, ZLayer}
 

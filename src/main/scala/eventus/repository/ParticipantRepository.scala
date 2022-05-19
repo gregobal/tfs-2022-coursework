@@ -1,7 +1,7 @@
 package eventus.repository
 
+import eventus.common.RepositoryError
 import eventus.common.types.{EventId, MemberId}
-import eventus.error.RepositoryError
 import eventus.model.Participant
 import zio.IO
 

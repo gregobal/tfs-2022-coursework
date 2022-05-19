@@ -1,5 +1,6 @@
 package eventus.endpoint
 
+import eventus.common.AppError.handleServerLogicError
 import eventus.common.types.CommunityId
 import eventus.dto.CommunityCreateDTO
 import eventus.model.Community
@@ -24,31 +25,35 @@ object CommunityEndpoint {
       .out(jsonBody[List[Community]])
       .errorOut(jsonBody[String])
       .zServerLogic(_ =>
-        CommunityService(_.getAll)
-          .mapError(err => err.message)
+        handleServerLogicError(
+          CommunityService(_.getAll)
+        )
       ),
     communityEndpointRoot.get
       .in(path[UUID]("id"))
       .out(jsonBody[Option[Community]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
-        CommunityService(_.getById(CommunityId(id)))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          CommunityService(_.getById(CommunityId(id)))
+        )
       ),
     communityEndpointRoot.post
       .in(jsonBody[CommunityCreateDTO])
       .out(jsonBody[CommunityId])
       .errorOut(jsonBody[String])
       .zServerLogic(communityCreateDTO =>
-        CommunityService(_.create(communityCreateDTO))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          CommunityService(_.create(communityCreateDTO))
+        )
       ),
     communityEndpointRoot.put
       .in(jsonBody[Community])
       .errorOut(jsonBody[String])
       .zServerLogic(community =>
-        CommunityService(_.update(community))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          CommunityService(_.update(community))
+        )
       ),
     communityEndpointRoot.get
       .in("search")
@@ -56,9 +61,9 @@ object CommunityEndpoint {
       .out(jsonBody[List[Community]])
       .errorOut(jsonBody[String])
       .zServerLogic(q =>
-        CommunityService(_.search(q))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          CommunityService(_.search(q))
+        )
       )
   )
-
 }

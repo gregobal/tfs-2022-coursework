@@ -1,6 +1,6 @@
 package eventus.service
 
-import eventus.error.AppError
+import eventus.common.AppError
 import eventus.model.Participant
 import eventus.repository.ParticipantRepository
 import eventus.common.types.{EventId, MemberId}

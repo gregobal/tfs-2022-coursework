@@ -9,10 +9,12 @@ import eventus.service.{
 }
 import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.server.ServerEndpoint
-import sttp.tapir.server.ziohttp.ZioHttpInterpreter
+import sttp.tapir.server.interceptor.log.DefaultServerLog
+import sttp.tapir.server.ziohttp.{ZioHttpInterpreter, ZioHttpServerOptions}
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 import sttp.tapir.ztapir.ZServerEndpoint
 import zhttp.http.{Http, Request, Response}
+import zio.logging.backend.SLF4J
 import zio.{RIO, Task}
 
 package object endpoint {

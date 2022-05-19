@@ -1,5 +1,6 @@
 package eventus.endpoint
 
+import eventus.common.AppError.handleServerLogicError
 import eventus.common.types.{CommunityId, EventId}
 import eventus.dto.EventCreateDTO
 import eventus.endpoint.CommunityEndpoint.communityEndpointRoot
@@ -29,8 +30,9 @@ object EventEndpoint {
       .out(jsonBody[List[Event]])
       .errorOut(jsonBody[String])
       .zServerLogic(uuid =>
-        EventService(_.getAllOrByCommunityId(Some(CommunityId(uuid))))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          EventService(_.getAllOrByCommunityId(Some(CommunityId(uuid))))
+        )
       ),
     communityEndpointRoot.post
       .in(path[UUID]("communityId"))
@@ -39,33 +41,37 @@ object EventEndpoint {
       .out(jsonBody[EventId])
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
-        EventService(_.create(CommunityId(p._1), p._2))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          EventService(_.create(CommunityId(p._1), p._2))
+        )
       ),
     eventEndpointRoot.get
       .in(query[Option[UUID]]("communityId"))
       .out(jsonBody[List[Event]])
       .errorOut(jsonBody[String])
       .zServerLogic(communityIdOpt =>
-        EventService(
-          _.getAllOrByCommunityId(communityIdOpt.map(CommunityId(_)))
+        handleServerLogicError(
+          EventService(
+            _.getAllOrByCommunityId(communityIdOpt.map(CommunityId(_)))
+          )
         )
-          .mapError(err => err.message)
       ),
     eventEndpointRoot.get
       .in(path[UUID]("id"))
       .out(jsonBody[Option[Event]])
       .errorOut(jsonBody[String])
       .zServerLogic(id =>
-        EventService(_.getById(EventId(id)))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          EventService(_.getById(EventId(id)))
+        )
       ),
     eventEndpointRoot.put
       .in(jsonBody[Event])
       .errorOut(jsonBody[String])
       .zServerLogic(eventCreateDTO =>
-        EventService(_.update(eventCreateDTO))
-          .mapError(err => err.message)
+        handleServerLogicError(
+          EventService(_.update(eventCreateDTO))
+        )
       )
   )
 

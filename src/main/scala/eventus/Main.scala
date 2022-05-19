@@ -18,7 +18,7 @@ object Main extends ZIOAppDefault {
   override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
     (for {
       config <- ZIO.service[AppConfig]
-      _ <- migrate
+      _ <- migrate(config.database)
       _ <- Server.start(config.http.port, zioHttp ++ swagger)
     } yield ExitCode)
       .provide(

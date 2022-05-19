@@ -1,11 +1,11 @@
 package eventus.service
 
+import eventus.common.RepositoryError
 import eventus.common.types.{CommunityId, EventId}
-import eventus.error.RepositoryError
 import eventus.model.Event
 import eventus.repository.EventRepository
 import zio.test.Assertion._
-import zio.test.{ZIOSpecDefault, _}
+import zio.test._
 import zio.{IO, ULayer, ZIO, ZLayer}
 
 import java.time.ZonedDateTime

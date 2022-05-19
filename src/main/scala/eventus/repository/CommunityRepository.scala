@@ -1,7 +1,7 @@
 package eventus.repository
 
+import eventus.common.RepositoryError
 import eventus.common.types.CommunityId
-import eventus.error.RepositoryError
 import eventus.model.Community
 import zio.IO
 

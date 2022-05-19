@@ -1,6 +1,6 @@
 package eventus.repository
 
-import eventus.error.RepositoryError
+import eventus.common.RepositoryError
 import eventus.model.Participant
 import eventus.common.types.{EventId, MemberId}
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}

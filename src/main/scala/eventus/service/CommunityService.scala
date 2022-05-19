@@ -1,8 +1,8 @@
 package eventus.service
 
+import eventus.common.AppError
 import eventus.common.types.CommunityId
 import eventus.dto.CommunityCreateDTO
-import eventus.error.AppError
 import eventus.model.Community
 import zio.{Accessible, IO}
 

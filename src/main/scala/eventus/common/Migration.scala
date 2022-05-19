@@ -1,19 +1,16 @@
 package eventus.common
 
 import org.flywaydb.core.Flyway
-import zio.{RIO, ZIO}
+import zio.{RIO, Task, ZIO}
 
 object Migration {
-  val migrate: RIO[AppConfig, Unit] = {
-    ZIO.serviceWithZIO[AppConfig] { appConfig =>
-      val db = appConfig.database
-      ZIO.attemptBlockingIO {
-        Flyway
-          .configure()
-          .dataSource(db.url, db.user, db.password)
-          .load()
-          .migrate()
-      }
+  def migrate(dbConfig: DbConfig): Task[Unit] = {
+    ZIO.attemptBlockingIO {
+      Flyway
+        .configure()
+        .dataSource(dbConfig.url, dbConfig.user, dbConfig.password)
+        .load()
+        .migrate()
     }
   }
 }

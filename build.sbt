@@ -5,8 +5,6 @@ val zioVersion = "2.0.0-RC5"
 val zHttpVersion = "2.0.0-RC7"
 val tapirVersion = "1.0.0-M9"
 val circeVersion = "0.14.1"
-val slf4jVersion = "1.7.36"
-val zioLoggingVersion = "2.0.0-RC8"
 
 ThisBuild / libraryDependencies ++= Seq(
   //core
@@ -16,10 +14,10 @@ ThisBuild / libraryDependencies ++= Seq(
   //config
   "com.github.pureconfig" %% "pureconfig" % "0.17.1",
   //logger
-  "org.slf4j" % "slf4j-api" % slf4jVersion,
-  "org.slf4j" % "slf4j-simple" % slf4jVersion,
-  "dev.zio" %% "zio-logging" % zioLoggingVersion,
-  "dev.zio" %% "zio-logging-slf4j" % zioLoggingVersion,
+  "org.slf4j" % "slf4j-api" % "1.7.36",
+  "ch.qos.logback" % "logback-classic" % "1.2.11",
+  "io.logz.logback" % "logzio-logback-appender" % "1.0.24",
+  "dev.zio" %% "zio-logging-slf4j" % "2.0.0-RC8",
   //sql
   "io.getquill" %% "quill-jdbc-zio" % "3.17.0-RC3",
   "org.postgresql" % "postgresql" % "42.3.4",

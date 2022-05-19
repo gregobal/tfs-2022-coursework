@@ -1,7 +1,7 @@
 package eventus.repository
 
+import eventus.common.RepositoryError
 import eventus.common.types.{CommunityId, EventId}
-import eventus.error.RepositoryError
 import eventus.model.Event
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}

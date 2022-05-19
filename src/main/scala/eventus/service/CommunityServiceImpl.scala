@@ -1,8 +1,8 @@
 package eventus.service
 
+import eventus.common.{AppError, RepositoryError, ServiceError}
 import eventus.common.types.CommunityId
 import eventus.dto.CommunityCreateDTO
-import eventus.error.{AppError, ServiceError}
 import eventus.model.Community
 import eventus.repository.CommunityRepository
 import io.scalaland.chimney.dsl.TransformerOps
@@ -51,7 +51,7 @@ case class CommunityServiceImpl(repo: CommunityRepository)
             throw new RuntimeException("Search string is too short")
           words
         }
-        .mapError(ServiceError)
+        .mapError(ex => ServiceError(ex.getMessage))
       result <- repo.likeByWordsArray(words)
     } yield result
   }
