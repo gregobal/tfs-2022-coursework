@@ -17,7 +17,7 @@ import java.util.UUID
 object ParticipantEndpoint {
 
   private val eventId = path[UUID]("eventId")
-  private val memberId = path[UUID]("eventId")
+  private val memberId = path[UUID]("memberId")
 
   // TODO - ошибки временно нсообщением к клиенту как есть, доработать
   val all: List[ZServerEndpoint[ParticipantService, ZioStreams]] = List(
@@ -44,7 +44,7 @@ object ParticipantEndpoint {
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
         handleServerLogicError(
-          ParticipantService(_.create(EventId(p._1), MemberId(p._2)))
+          ParticipantService(_.register(EventId(p._1), MemberId(p._2)))
         )
       ),
     eventEndpointRoot.delete
@@ -54,7 +54,7 @@ object ParticipantEndpoint {
       .errorOut(jsonBody[String])
       .zServerLogic(p =>
         handleServerLogicError(
-          ParticipantService(_.delete(EventId(p._1), MemberId(p._2)))
+          ParticipantService(_.unregister(EventId(p._1), MemberId(p._2)))
         )
       )
   )

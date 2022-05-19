@@ -12,8 +12,8 @@ trait ParticipantService {
       eventId: EventId,
       memberId: Option[MemberId]
   ): IO[AppError, List[Participant]]
-  def create(eventId: EventId, memberId: MemberId): IO[AppError, Unit]
-  def delete(eventId: EventId, memberId: MemberId): IO[AppError, Unit]
+  def register(eventId: EventId, memberId: MemberId): IO[AppError, Unit]
+  def unregister(eventId: EventId, memberId: MemberId): IO[AppError, Unit]
 }
 
 object ParticipantService extends Accessible[ParticipantService]
