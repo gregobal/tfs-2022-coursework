@@ -2,6 +2,7 @@ package eventus.service
 
 import eventus.common.AppError
 import eventus.common.types.{CommunityId, MemberId}
+import eventus.common.validation.DTOValidator.validateMemberCreateDTO
 import eventus.dto.MemberCreateDTO
 import eventus.model.Member
 import eventus.repository.MemberRepository
@@ -24,8 +25,9 @@ case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
       memberCreateDTO: MemberCreateDTO
   ): IO[AppError, MemberId] =
     for {
+      validated <- validateMemberCreateDTO(memberCreateDTO).toZIO
       id <- zio.Random.nextUUID
-      member = memberCreateDTO
+      member = validated
         .into[Member]
         .withFieldConst(_.id, MemberId(id))
         .withFieldConst(_.communityId, communityId)

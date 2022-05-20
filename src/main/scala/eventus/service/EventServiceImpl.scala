@@ -1,7 +1,8 @@
 package eventus.service
 
-import eventus.common.AppError
+import eventus.common.{AppError, ServiceError}
 import eventus.common.types.{CommunityId, EventId}
+import eventus.common.validation.DTOValidator.validateEventCreateDTO
 import eventus.dto.EventCreateDTO
 import eventus.model.Event
 import eventus.repository.EventRepository
@@ -24,8 +25,9 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
       eventCreateDTO: EventCreateDTO
   ): ZIO[MemberService with NotificationService, AppError, EventId] =
     for {
+      validated <- validateEventCreateDTO(eventCreateDTO).toZIO
       id <- zio.Random.nextUUID
-      event = eventCreateDTO
+      event = validated
         .into[Event]
         .withFieldConst(_.id, EventId(id))
         .withFieldConst(_.communityId, communityId)

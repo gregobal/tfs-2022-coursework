@@ -1,7 +1,9 @@
 package eventus.service
 
-import eventus.common.{AppError, RepositoryError, ServiceError}
+import eventus.common.validation.FieldValidator._
 import eventus.common.types.CommunityId
+import eventus.common.validation.DTOValidator.validateCommunityCreateDTO
+import eventus.common.{AppError, ServiceError}
 import eventus.dto.CommunityCreateDTO
 import eventus.model.Community
 import eventus.repository.CommunityRepository
@@ -9,7 +11,6 @@ import io.scalaland.chimney.dsl.TransformerOps
 import zio.{IO, URLayer, ZLayer}
 
 import java.net.URLDecoder
-import java.util.UUID
 
 case class CommunityServiceImpl(repo: CommunityRepository)
     extends CommunityService {
@@ -23,14 +24,17 @@ case class CommunityServiceImpl(repo: CommunityRepository)
 
   override def create(
       communityCreateDTO: CommunityCreateDTO
-  ): IO[AppError, CommunityId] = for {
-    id <- zio.Random.nextUUID
-    community = communityCreateDTO
-      .into[Community]
-      .withFieldConst(_.id, CommunityId(id))
-      .transform
-    _ <- repo.insert(community)
-  } yield community.id
+  ): IO[AppError, CommunityId] = {
+    for {
+      validated <- validateCommunityCreateDTO(communityCreateDTO).toZIO
+      id <- zio.Random.nextUUID
+      community = validated
+        .into[Community]
+        .withFieldConst(_.id, CommunityId(id))
+        .transform
+      _ <- repo.insert(community)
+    } yield community.id
+  }
 
   override def update(community: Community): IO[AppError, Unit] = {
     repo.update(community)

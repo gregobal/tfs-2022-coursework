@@ -10,6 +10,8 @@ case class RepositoryError(throwable: Throwable) extends AppError {
   override val message: String = throwable.getMessage
 }
 
+case class ValidationError(override val message: String) extends AppError
+
 case class ServiceError(override val message: String) extends AppError
 
 object AppError {
@@ -19,6 +21,7 @@ object AppError {
     .tapError(appError => ZIO.logError(appError.message))
     .mapError {
       case ServiceError(message)      => message
+      case ValidationError(message)   => message
       case RepositoryError(throwable) => throw throwable
     }
 }
