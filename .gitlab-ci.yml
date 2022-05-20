@@ -1,7 +1,32 @@
 image: ${DOCKER_REGISTRY}hseeberger/scala-sbt:17.0.2_1.6.2_2.13.8
 
+.sbt_cache:
+  variables:
+    COURSIER_CACHE: sbt_cache/coursier
+  cache:
+    key: "$CI_BUILD_REF_NAME-$CI_JOB_NAME"
+    paths:
+      - "sbt_cache/coursier"
+
+.sbt_artifacts_reports:
+  artifacts:
+    reports:
+      junit:
+        - "**/target/test-reports/TEST*.xml"
+
 stages:          # List of stages for jobs, and their order of execution
+  - test
   - deploy
+
+unit-test-job:   # This job runs in the test stage.
+  stage: test
+  extends:
+    - .sbt_cache
+    - .sbt_artifacts_reports
+  only:
+    - merge_requests
+  script:
+    - sbt test
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy
