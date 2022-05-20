@@ -42,6 +42,8 @@ ThisBuild / libraryDependencies ++= Seq(
   "dev.zio" %% "zio-prelude" % "1.0.0-RC13"
 )
 
+testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
+
 lazy val root = (project in file("."))
   .settings(
     name := "coursework"
