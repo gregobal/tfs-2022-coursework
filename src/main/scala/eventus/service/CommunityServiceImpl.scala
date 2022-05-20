@@ -8,7 +8,7 @@ import eventus.dto.CommunityCreateDTO
 import eventus.model.Community
 import eventus.repository.CommunityRepository
 import io.scalaland.chimney.dsl.TransformerOps
-import zio.{IO, URLayer, ZLayer}
+import zio.{IO, Task, URLayer, ZLayer}
 
 import java.net.URLDecoder
 
@@ -43,19 +43,18 @@ case class CommunityServiceImpl(repo: CommunityRepository)
   // TODO - временно так себе реализация поиска, заменить на эффективный сервис поиска
   override def search(string: String): IO[AppError, List[Community]] = {
     for {
-      words <- IO
-        .attempt {
-          val words = URLDecoder
+      words <- Task
+        .succeed {
+          URLDecoder
             .decode(string, "UTF-8")
             .split("\\s")
             .toList
             .filter(_.length > 1)
             .map(w => s"%${w.toLowerCase}%")
-          if (words.isEmpty)
-            throw new RuntimeException("Search string is too short")
-          words
         }
-        .mapError(ex => ServiceError(ex.getMessage))
+        .filterOrElseWith(_.nonEmpty)(_ =>
+          IO.fail(ServiceError("Search string or its words is too short"))
+        )
       result <- repo.likeByWordsArray(words)
     } yield result
   }
