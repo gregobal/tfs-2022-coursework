@@ -6,7 +6,7 @@ import eventus.model.Event
 import zio.IO
 
 trait EventRepository {
-  def getAllOrFilterByCommunityId(
+  def queryAllOrFilterByCommunityId(
       communityIdOpt: Option[CommunityId]
   ): IO[RepositoryError, List[Event]]
   def filterById(id: EventId): IO[RepositoryError, Option[Event]]

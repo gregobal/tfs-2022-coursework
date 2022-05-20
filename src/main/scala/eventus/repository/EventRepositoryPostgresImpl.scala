@@ -20,7 +20,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
     querySchema[Event]("event")
   )
 
-  override def getAllOrFilterByCommunityId(
+  override def queryAllOrFilterByCommunityId(
       communityIdOpt: Option[CommunityId]
   ): IO[RepositoryError, List[Event]] = {
     val filter = communityIdOpt match {

@@ -13,7 +13,7 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
   override def getAllOrByCommunityId(
       communityIdOpt: Option[CommunityId]
   ): IO[AppError, List[Event]] = {
-    repo.getAllOrFilterByCommunityId(communityIdOpt)
+    repo.queryAllOrFilterByCommunityId(communityIdOpt)
   }
 
   override def getById(id: EventId): IO[AppError, Option[Event]] = {
