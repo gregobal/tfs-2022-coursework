@@ -1,29 +1,63 @@
 package eventus.service
 
-import eventus.common.AppError
 import eventus.model.Event
-import zio.{Accessible, ULayer, ZIO, ZLayer}
+import zio.{Accessible, Queue, Schedule, UIO, URIO, URLayer, ZIO, ZLayer}
 
 trait NotificationService {
-  def notifyAboutEvent(event: Event): ZIO[MemberService, AppError, Unit]
+  def processing(): URIO[MemberService with EmailService, Unit]
+  def addNotifyAboutEvent(
+      event: Event
+  ): UIO[Unit]
 }
 
 object NotificationService extends Accessible[NotificationService]
 
-case class NotificationServiceFakeImpl() extends NotificationService {
+object NotificationQueue {
+  val live: ZLayer[Any, Nothing, Queue[Event]] = ZLayer.fromZIO(
+    Queue.unbounded[Event]
+  )
+}
 
-  def notifyAboutEvent(event: Event): ZIO[MemberService, AppError, Unit] = {
-    for {
+case class NotificationServiceQueueImpl(
+    queue: Queue[Event]
+) extends NotificationService {
+
+  def processing(): URIO[MemberService with EmailService, Unit] = {
+    (for {
+      f <- queue.take.fork
+      event <- f.join
       members <- MemberService(_.getByCommunityId(event.communityId))
       emailList = members.filter(_.isNotify).map(_.email)
-      _ <- ZIO.foreachPar(emailList) { email =>
-        ZIO.log(email + ": " + event)
-      }
+      _ <- ZIO
+        .foreachPar(emailList) { email =>
+          EmailService(
+            _.send(
+              email,
+              event.title,
+              s"${event.title}\n${event.datetime}\n${event.location}\n${event.description}"
+            )
+          )
+        }
+        .tapError(ex => ZIO.logError(ex.getMessage))
+        .unit
+    } yield ())
+      .orElse(ZIO.unit)
+      .repeat(
+        Schedule.forever
+      )
+      .unit
+  }
+
+  def addNotifyAboutEvent(
+      event: Event
+  ): UIO[Unit] = {
+    for {
+      _ <- queue.offer(event)
     } yield ()
   }
 }
 
-object NotificationServiceFakeImpl {
-  val live: ULayer[NotificationServiceFakeImpl] =
-    ZLayer.succeed(NotificationServiceFakeImpl())
+object NotificationServiceQueueImpl {
+  val live: URLayer[Queue[Event], NotificationService] =
+    ZLayer.fromFunction(NotificationServiceQueueImpl(_))
 }

@@ -19,7 +19,8 @@ object Main extends ZIOAppDefault {
     (for {
       config <- ZIO.service[AppConfig]
       _ <- migrate(config.database)
-      _ <- Server.start(config.http.port, zioHttp ++ swagger)
+      _ <- Server.start(config.http.port, zioHttp ++ swagger) zipPar
+        ZIO.serviceWithZIO[NotificationService](_.processing())
     } yield ExitCode)
       .provide(
         AppConfig.live,
@@ -27,7 +28,9 @@ object Main extends ZIOAppDefault {
         CommunityServiceImpl.live,
         MemberServiceImpl.live,
         ParticipantServiceImpl.live,
-        NotificationServiceFakeImpl.live,
+        NotificationServiceQueueImpl.live,
+        NotificationQueue.live,
+        EmailServiceImpl.live,
         EventRepositoryPostgresImpl.live,
         CommunityRepositoryPostgresImpl.live,
         MemberRepositoryPostgresImpl.live,

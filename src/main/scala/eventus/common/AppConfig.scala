@@ -15,7 +15,18 @@ final case class HttpConfig(
     port: Int
 )
 
-final case class AppConfig(database: DbConfig, http: HttpConfig)
+final case class EmailConfig(
+    host: String,
+    port: Int,
+    user: String,
+    password: String
+)
+
+final case class AppConfig(
+    database: DbConfig,
+    http: HttpConfig,
+    email: EmailConfig
+)
 
 object AppConfig {
   val live: ULayer[AppConfig] = ZLayer.fromZIO(

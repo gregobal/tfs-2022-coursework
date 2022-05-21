@@ -39,7 +39,8 @@ ThisBuild / libraryDependencies ++= Seq(
   //util
   "io.scalaland" %% "chimney" % "0.6.1",
   "io.estatico" %% "newtype" % "0.4.4",
-  "dev.zio" %% "zio-prelude" % "1.0.0-RC13"
+  "dev.zio" %% "zio-prelude" % "1.0.0-RC13",
+  "com.github.daddykotex" %% "courier" % "3.1.0"
 )
 
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
