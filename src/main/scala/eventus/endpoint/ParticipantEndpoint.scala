@@ -19,7 +19,6 @@ object ParticipantEndpoint {
   private val eventId = path[UUID]("eventId")
   private val memberId = path[UUID]("memberId")
 
-  // TODO - ошибки временно нсообщением к клиенту как есть, доработать
   val all: List[ZServerEndpoint[ParticipantService, ZioStreams]] = List(
     eventEndpointRoot.get
       .in(eventId)

@@ -19,7 +19,6 @@ object CommunityEndpoint {
   private[endpoint] val communityEndpointRoot =
     endpoint.in("communities").tag("Community")
 
-  // TODO - ошибки временно нсообщением к клиенту как есть, доработать
   val all: List[ZServerEndpoint[CommunityService, ZioStreams]] = List(
     communityEndpointRoot.get
       .out(jsonBody[List[Community]])

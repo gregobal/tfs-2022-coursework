@@ -19,7 +19,6 @@ object EventEndpoint {
 
   private[endpoint] val eventEndpointRoot = endpoint.in("events").tag("Event")
 
-  // TODO - ошибки временно нсообщением к клиенту как есть, доработать
   val all: List[ZServerEndpoint[
     MemberService with NotificationService with EventService,
     ZioStreams

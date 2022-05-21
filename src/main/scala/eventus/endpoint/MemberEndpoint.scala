@@ -19,7 +19,6 @@ object MemberEndpoint {
 
   private val memberEndpointRoot = endpoint.in("members").tag("Community")
 
-  // TODO - ошибки временно нсообщением к клиенту как есть, доработать
   val all: List[ZServerEndpoint[MemberService, ZioStreams]] = List(
     communityEndpointRoot.get
       .in(path[UUID]("communityId"))
@@ -33,7 +32,7 @@ object MemberEndpoint {
       ),
     communityEndpointRoot.post
       .in(path[UUID]("communityId"))
-      .in("members")
+      .in("join")
       .in(jsonBody[MemberCreateDTO])
       .out(jsonBody[MemberId])
       .errorOut(jsonBody[String])
