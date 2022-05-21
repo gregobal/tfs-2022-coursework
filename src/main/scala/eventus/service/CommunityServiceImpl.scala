@@ -2,11 +2,11 @@ package eventus.service
 
 import eventus.common.types.CommunityId
 import eventus.common.validation.{
-  validateToZIO,
   validateStringFieldNotBlank,
-  validateStringMinLength
+  validateStringMinLength,
+  validateToZIO
 }
-import eventus.common.{AppError, ServiceError, validation}
+import eventus.common.{AppError, ServiceError, ValidationError, validation}
 import eventus.dto.CommunityCreateDTO
 import eventus.model.Community
 import eventus.repository.CommunityRepository
@@ -30,26 +30,21 @@ case class CommunityServiceImpl(repo: CommunityRepository)
       communityCreateDTO: CommunityCreateDTO
   ): IO[AppError, CommunityId] = {
     for {
-      validated <- validateToZIO(
-        Validation.validateWith(
-          for {
-            v <- validateStringFieldNotBlank(communityCreateDTO.name, "name")
-            _ <- validateStringMinLength(communityCreateDTO.name, "name", 2)
-          } yield v,
-          Validation.succeed(communityCreateDTO.description)
-        )(CommunityCreateDTO)
-      )
       id <- zio.Random.nextUUID
-      community = validated
+      community = communityCreateDTO
         .into[Community]
         .withFieldConst(_.id, CommunityId(id))
         .transform
-      _ <- repo.insert(community)
+      validated <- validateCommunity(community)
+      _ <- repo.insert(validated)
     } yield community.id
   }
 
   override def update(community: Community): IO[AppError, Unit] = {
-    repo.update(community)
+    for {
+      validated <- validateCommunity(community)
+      _ <- repo.update(validated)
+    } yield ()
   }
 
   // TODO - временно так себе реализация поиска, заменить на эффективный сервис поиска
@@ -70,6 +65,20 @@ case class CommunityServiceImpl(repo: CommunityRepository)
       result <- repo.likeByWordsArray(words)
     } yield result
   }
+
+  private def validateCommunity(
+      community: Community
+  ): IO[ValidationError, Community] =
+    validateToZIO(
+      Validation.validateWith(
+        Validation.succeed(community.id),
+        for {
+          v <- validateStringFieldNotBlank(community.name, "name")
+          _ <- validateStringMinLength(community.name, "name", 2)
+        } yield v,
+        Validation.succeed(community.description)
+      )(Community)
+    )
 }
 
 object CommunityServiceImpl {

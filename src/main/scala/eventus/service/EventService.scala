@@ -14,7 +14,7 @@ trait EventService {
   def create(
       communityId: CommunityId,
       eventCreateDTO: EventCreateDTO
-  ): ZIO[MemberService with NotificationService, AppError, EventId]
+  ): ZIO[NotificationService, AppError, EventId]
   def update(event: Event): IO[AppError, Unit]
 }
 

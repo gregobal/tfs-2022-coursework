@@ -1,11 +1,11 @@
 package eventus.service
 
-import eventus.common.AppError
+import eventus.common.{AppError, ValidationError}
 import eventus.common.types.{CommunityId, EventId}
 import eventus.common.validation.{
-  validateToZIO,
   validateStringFieldNotBlank,
   validateStringMinLength,
+  validateToZIO,
   validateZoneDateTimeIsFuture
 }
 import eventus.dto.EventCreateDTO
@@ -29,34 +29,42 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
   override def create(
       communityId: CommunityId,
       eventCreateDTO: EventCreateDTO
-  ): ZIO[MemberService with NotificationService, AppError, EventId] =
+  ): ZIO[NotificationService, AppError, EventId] =
     for {
-      validated <- validateToZIO(
-        Validation.validateWith(
-          for {
-            v <- validateStringFieldNotBlank(eventCreateDTO.title, "title")
-            _ <- validateStringMinLength(eventCreateDTO.title, "title", 6)
-          } yield v,
-          Validation.succeed(eventCreateDTO.description),
-          validateZoneDateTimeIsFuture(eventCreateDTO.datetime, "datetime"),
-          Validation.succeed(eventCreateDTO.location),
-          Validation.succeed(eventCreateDTO.link),
-          Validation.succeed(eventCreateDTO.capacity)
-        )(EventCreateDTO)
-      )
       id <- zio.Random.nextUUID
-      event = validated
+      event = eventCreateDTO
         .into[Event]
         .withFieldConst(_.id, EventId(id))
         .withFieldConst(_.communityId, communityId)
         .transform
-      _ <- repo.insert(event)
-      _ <- NotificationService(_.notifyAboutEvent(event))
+      validated <- validateEvent(event)
+      _ <- repo.insert(validated)
+      _ <- NotificationService(_.addNotifyAboutEvent(validated))
     } yield event.id
 
   override def update(event: Event): IO[AppError, Unit] = {
-    repo.update(event)
+    for {
+      validated <- validateEvent(event)
+      _ <- repo.update(validated)
+    } yield ()
   }
+
+  private def validateEvent(event: Event): IO[ValidationError, Event] =
+    validateToZIO(
+      Validation.validateWith(
+        Validation.succeed(event.id),
+        Validation.succeed(event.communityId),
+        for {
+          v <- validateStringFieldNotBlank(event.title, "title")
+          _ <- validateStringMinLength(event.title, "title", 6)
+        } yield v,
+        Validation.succeed(event.description),
+        validateZoneDateTimeIsFuture(event.datetime, "datetime"),
+        Validation.succeed(event.location),
+        Validation.succeed(event.link),
+        Validation.succeed(event.capacity)
+      )(Event)
+    )
 }
 
 object EventServiceImpl {

@@ -14,7 +14,7 @@ import eventus.service.{
 import io.scalaland.chimney.dsl.TransformerOps
 import zio.test.Assertion.isSome
 import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assert, assertTrue}
-import zio.{IO, Scope, ULayer, ZIO, ZLayer}
+import zio.{IO, Scope, UIO, ULayer, ZIO, ZLayer}
 
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -69,8 +69,7 @@ object EventServiceTests extends ZIOSpecDefault {
           .provide(
             InMemoryEventRepository.live,
             EventServiceImpl.live,
-            NotificationServiceFake.live,
-            MemberServiceFake.live
+            NotificationServiceFake.live
           )
       },
       test("update") {
@@ -120,30 +119,32 @@ object InMemoryEventRepository {
     ZLayer.succeed(new InMemoryEventRepository)
 }
 
-class NotificationServiceFake extends NotificationService {
-  override def notifyAboutEvent(
+object NotificationServiceFake extends NotificationService {
+  override def addNotifyAboutEvent(
       event: Event
-  ): ZIO[MemberService, AppError, Unit] = ZIO.succeed(())
-}
+  ): UIO[Unit] = ZIO.succeed(())
 
-object NotificationServiceFake {
+  override def processing(): UIO[Unit] = ZIO.succeed(())
+
   def live: ULayer[NotificationService] =
-    ZLayer.succeed(new NotificationServiceFake)
+    ZLayer.succeed(NotificationServiceFake)
 }
 
 object MemberServiceFake {
   def live: ULayer[MemberService] = ZLayer.succeed(new MemberService {
     override def getByCommunityId(
         communityId: CommunityId
-    ): IO[AppError, List[Member]] = ???
-    override def getById(id: types.MemberId): IO[AppError, Option[Member]] = ???
+    ): IO[AppError, List[Member]] = IO.succeed(List.empty)
+    override def getById(id: types.MemberId): IO[AppError, Option[Member]] =
+      ZIO.none
     override def create(
         communityId: CommunityId,
         memberCreateDTO: MemberCreateDTO
-    ): IO[AppError, types.MemberId] = ???
-    override def delete(id: types.MemberId): IO[AppError, Unit] = ???
+    ): IO[AppError, types.MemberId] =
+      IO.succeed(types.MemberId(UUID.randomUUID()))
+    override def delete(id: types.MemberId): IO[AppError, Unit] = ZIO.unit
     override def setNotify(
         memberIsNotifyDTO: MemberIsNotifyDTO
-    ): IO[AppError, Unit] = ???
+    ): IO[AppError, Unit] = ZIO.unit
   })
 }
