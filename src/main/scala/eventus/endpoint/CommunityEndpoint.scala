@@ -2,7 +2,7 @@ package eventus.endpoint
 
 import eventus.common.AppError.handleServerLogicError
 import eventus.common.types.CommunityId
-import eventus.dto.CommunityCreateDTO
+import eventus.dto.{ApiErrorDTO, CommunityCreateDTO}
 import eventus.model.Community
 import eventus.service.CommunityService
 import io.circe.generic.auto._
@@ -22,7 +22,7 @@ object CommunityEndpoint {
   val all: List[ZServerEndpoint[CommunityService, ZioStreams]] = List(
     communityEndpointRoot.get
       .out(jsonBody[List[Community]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(_ =>
         handleServerLogicError(
           CommunityService(_.getAll)
@@ -31,7 +31,7 @@ object CommunityEndpoint {
     communityEndpointRoot.get
       .in(path[UUID]("id"))
       .out(jsonBody[Option[Community]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
         handleServerLogicError(
           CommunityService(_.getById(CommunityId(id)))
@@ -40,7 +40,7 @@ object CommunityEndpoint {
     communityEndpointRoot.post
       .in(jsonBody[CommunityCreateDTO])
       .out(jsonBody[CommunityId])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(communityCreateDTO =>
         handleServerLogicError(
           CommunityService(_.create(communityCreateDTO))
@@ -48,7 +48,7 @@ object CommunityEndpoint {
       ),
     communityEndpointRoot.put
       .in(jsonBody[Community])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(community =>
         handleServerLogicError(
           CommunityService(_.update(community))
@@ -58,7 +58,7 @@ object CommunityEndpoint {
       .in("search")
       .in(query[String]("q"))
       .out(jsonBody[List[Community]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(q =>
         handleServerLogicError(
           CommunityService(_.search(q))

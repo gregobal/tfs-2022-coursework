@@ -2,6 +2,7 @@ package eventus.endpoint
 
 import eventus.common.AppError.handleServerLogicError
 import eventus.common.types.{EventId, MemberId}
+import eventus.dto.ApiErrorDTO
 import eventus.endpoint.EventEndpoint.eventEndpointRoot
 import eventus.model.Participant
 import eventus.service.ParticipantService
@@ -25,7 +26,7 @@ object ParticipantEndpoint {
       .in("participants")
       .in(query[Option[UUID]]("memberId"))
       .out(jsonBody[List[Participant]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(
           ParticipantService(
@@ -40,7 +41,7 @@ object ParticipantEndpoint {
       .in(eventId)
       .in("register")
       .in(memberId)
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(
           ParticipantService(_.register(EventId(p._1), MemberId(p._2)))
@@ -50,7 +51,7 @@ object ParticipantEndpoint {
       .in(path[UUID]("eventId"))
       .in("unregister")
       .in(memberId)
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(
           ParticipantService(_.unregister(EventId(p._1), MemberId(p._2)))

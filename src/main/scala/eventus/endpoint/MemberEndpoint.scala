@@ -2,7 +2,7 @@ package eventus.endpoint
 
 import eventus.common.AppError.handleServerLogicError
 import eventus.common.types.{CommunityId, MemberId}
-import eventus.dto.{MemberCreateDTO, MemberIsNotifyDTO}
+import eventus.dto.{ApiErrorDTO, MemberCreateDTO, MemberIsNotifyDTO}
 import eventus.endpoint.CommunityEndpoint.communityEndpointRoot
 import eventus.model.Member
 import eventus.service.MemberService
@@ -24,7 +24,7 @@ object MemberEndpoint {
       .in(path[UUID]("communityId"))
       .in("members")
       .out(jsonBody[List[Member]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(uuid =>
         handleServerLogicError(
           MemberService(_.getByCommunityId(CommunityId(uuid)))
@@ -35,7 +35,7 @@ object MemberEndpoint {
       .in("join")
       .in(jsonBody[MemberCreateDTO])
       .out(jsonBody[MemberId])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(
           MemberService(_.create(CommunityId(p._1), p._2))
@@ -44,7 +44,7 @@ object MemberEndpoint {
     memberEndpointRoot.get
       .in(path[UUID]("id"))
       .out(jsonBody[Option[Member]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
         handleServerLogicError(
           MemberService(_.getById(MemberId(id)))
@@ -53,7 +53,7 @@ object MemberEndpoint {
     memberEndpointRoot.put
       .in("notify")
       .in(jsonBody[MemberIsNotifyDTO])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(
           MemberService(_.setNotify(p))
@@ -61,7 +61,7 @@ object MemberEndpoint {
       ),
     memberEndpointRoot.delete
       .in(path[UUID]("id"))
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
         handleServerLogicError(
           MemberService(_.delete(MemberId(id)))

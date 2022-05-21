@@ -2,7 +2,7 @@ package eventus.endpoint
 
 import eventus.common.AppError.handleServerLogicError
 import eventus.common.types.{CommunityId, EventId}
-import eventus.dto.EventCreateDTO
+import eventus.dto.{ApiErrorDTO, EventCreateDTO}
 import eventus.endpoint.CommunityEndpoint.communityEndpointRoot
 import eventus.model.Event
 import eventus.service.{EventService, MemberService, NotificationService}
@@ -27,7 +27,7 @@ object EventEndpoint {
       .in(path[UUID]("communityId"))
       .in("events")
       .out(jsonBody[List[Event]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(uuid =>
         handleServerLogicError(
           EventService(_.getAllOrByCommunityId(Some(CommunityId(uuid))))
@@ -38,7 +38,7 @@ object EventEndpoint {
       .in("events")
       .in(jsonBody[EventCreateDTO])
       .out(jsonBody[EventId])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(
           EventService(_.create(CommunityId(p._1), p._2))
@@ -47,7 +47,7 @@ object EventEndpoint {
     eventEndpointRoot.get
       .in(query[Option[UUID]]("communityId"))
       .out(jsonBody[List[Event]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(communityIdOpt =>
         handleServerLogicError(
           EventService(
@@ -58,7 +58,7 @@ object EventEndpoint {
     eventEndpointRoot.get
       .in(path[UUID]("id"))
       .out(jsonBody[Option[Event]])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
         handleServerLogicError(
           EventService(_.getById(EventId(id)))
@@ -66,7 +66,7 @@ object EventEndpoint {
       ),
     eventEndpointRoot.put
       .in(jsonBody[Event])
-      .errorOut(jsonBody[String])
+      .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(eventCreateDTO =>
         handleServerLogicError(
           EventService(_.update(eventCreateDTO))
