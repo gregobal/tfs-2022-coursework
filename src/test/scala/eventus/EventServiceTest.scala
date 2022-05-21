@@ -2,7 +2,7 @@ package eventus
 
 import eventus.common.types.{CommunityId, EventId}
 import eventus.common.{AppError, RepositoryError, types}
-import eventus.dto.{EventCreateDTO, MemberCreateDTO}
+import eventus.dto.{EventCreateDTO, MemberCreateDTO, MemberIsNotifyDTO}
 import eventus.model.{Event, Member}
 import eventus.repository.EventRepository
 import eventus.service.{
@@ -13,7 +13,7 @@ import eventus.service.{
 }
 import io.scalaland.chimney.dsl.TransformerOps
 import zio.test.Assertion.isSome
-import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assertTrue, assert}
+import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assert, assertTrue}
 import zio.{IO, Scope, ULayer, ZIO, ZLayer}
 
 import java.time.ZonedDateTime
@@ -142,5 +142,8 @@ object MemberServiceFake {
         memberCreateDTO: MemberCreateDTO
     ): IO[AppError, types.MemberId] = ???
     override def delete(id: types.MemberId): IO[AppError, Unit] = ???
+    override def setNotify(
+        memberIsNotifyDTO: MemberIsNotifyDTO
+    ): IO[AppError, Unit] = ???
   })
 }

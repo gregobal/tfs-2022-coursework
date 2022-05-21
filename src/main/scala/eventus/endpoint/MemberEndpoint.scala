@@ -2,7 +2,7 @@ package eventus.endpoint
 
 import eventus.common.AppError.handleServerLogicError
 import eventus.common.types.{CommunityId, MemberId}
-import eventus.dto.MemberCreateDTO
+import eventus.dto.{MemberCreateDTO, MemberIsNotifyDTO}
 import eventus.endpoint.CommunityEndpoint.communityEndpointRoot
 import eventus.model.Member
 import eventus.service.MemberService
@@ -48,6 +48,15 @@ object MemberEndpoint {
       .zServerLogic(id =>
         handleServerLogicError(
           MemberService(_.getById(MemberId(id)))
+        )
+      ),
+    memberEndpointRoot.put
+      .in("notify")
+      .in(jsonBody[MemberIsNotifyDTO])
+      .errorOut(jsonBody[String])
+      .zServerLogic(p =>
+        handleServerLogicError(
+          MemberService(_.setNotify(p))
         )
       ),
     memberEndpointRoot.delete

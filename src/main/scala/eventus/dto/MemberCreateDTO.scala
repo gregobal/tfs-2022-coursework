@@ -1,5 +1,6 @@
 package eventus.dto
 
 case class MemberCreateDTO(
-    email: String
+    email: String,
+    isNotify: Boolean
 )

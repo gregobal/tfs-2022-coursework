@@ -12,4 +12,5 @@ trait MemberRepository {
   def filterById(id: MemberId): IO[RepositoryError, Option[Member]]
   def insert(member: Member): IO[RepositoryError, Unit]
   def delete(id: MemberId): IO[RepositoryError, Unit]
+  def updateIsNotify(id: MemberId, isNotify: Boolean): IO[RepositoryError, Unit]
 }

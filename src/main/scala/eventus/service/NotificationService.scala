@@ -15,7 +15,7 @@ case class NotificationServiceFakeImpl() extends NotificationService {
   def notifyAboutEvent(event: Event): ZIO[MemberService, AppError, Unit] = {
     for {
       members <- MemberService(_.getByCommunityId(event.communityId))
-      emailList = members.map(_.email)
+      emailList = members.filter(_.isNotify).map(_.email)
       _ <- ZIO.foreachPar(emailList) { email =>
         ZIO.log(email + ": " + event)
       }

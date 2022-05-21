@@ -18,7 +18,8 @@ object MemberServiceTest extends ZIOSpecDefault {
   private val member = Member(
     MemberId(UUID.fromString("3a917bdd-84d0-4e22-b55c-bc52f063c821")),
     "e@ma.il",
-    CommunityId(UUID.fromString("4a917bdd-84d0-4e22-b55c-bc52f063c822"))
+    CommunityId(UUID.fromString("4a917bdd-84d0-4e22-b55c-bc52f063c822")),
+    isNotify = false
   )
 
   override def spec: ZSpec[TestEnvironment with Scope, Any] =
@@ -85,12 +86,12 @@ class InMemoryMemberRepository extends MemberRepository {
     map.values.toList
   )
 
-  def filterById(id: MemberId): IO[RepositoryError, Option[Member]] =
+  override def filterById(id: MemberId): IO[RepositoryError, Option[Member]] =
     IO.succeed(
       map.get(id)
     )
 
-  def insert(member: Member): IO[RepositoryError, Unit] = IO.succeed {
+  override def insert(member: Member): IO[RepositoryError, Unit] = IO.succeed {
     map.put(member.id, member)
     ()
   }
@@ -98,6 +99,16 @@ class InMemoryMemberRepository extends MemberRepository {
   override def delete(id: MemberId): IO[RepositoryError, Unit] = IO.succeed {
     map.remove(id)
     ()
+  }
+
+  override def updateIsNotify(
+      id: MemberId,
+      isNotify: Boolean
+  ): IO[RepositoryError, Unit] = IO.succeed {
+    map.get(id) match {
+      case Some(value) => map.replace(id, value.copy(isNotify = isNotify))
+      case None        => ()
+    }
   }
 }
 

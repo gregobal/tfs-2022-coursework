@@ -2,8 +2,8 @@ package eventus.service
 
 import eventus.common.AppError
 import eventus.common.types.{CommunityId, MemberId}
-import eventus.common.validation.{validateToZIO, validateEmailField}
-import eventus.dto.MemberCreateDTO
+import eventus.common.validation.{validateEmailField, validateToZIO}
+import eventus.dto.{MemberCreateDTO, MemberIsNotifyDTO}
 import eventus.model.Member
 import eventus.repository.MemberRepository
 import io.scalaland.chimney.dsl.TransformerOps
@@ -43,6 +43,12 @@ case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
 
   override def delete(id: MemberId): IO[AppError, Unit] = {
     repo.delete(id)
+  }
+
+  override def setNotify(
+      memberIsNotifyDTO: MemberIsNotifyDTO
+  ): IO[AppError, Unit] = {
+    repo.updateIsNotify(memberIsNotifyDTO.id, memberIsNotifyDTO.isNotify)
   }
 }
 

@@ -62,6 +62,20 @@ case class MemberRepositoryPostgresImpl(dataSource: DataSource)
       .unit
       .provideService(dataSource)
       .mapError(RepositoryError)
+
+  override def updateIsNotify(
+      id: MemberId,
+      isNotify: Boolean
+  ): IO[RepositoryError, Unit] =
+    ctx
+      .run(
+        quote(
+          members.filter(_.id == lift(id)).update(_.isNotify -> lift(isNotify))
+        )
+      )
+      .unit
+      .provideService(dataSource)
+      .mapError(RepositoryError)
 }
 
 object MemberRepositoryPostgresImpl {
