@@ -2,11 +2,12 @@ package eventus.service
 
 import eventus.common.AppError
 import eventus.common.types.{CommunityId, MemberId}
-import eventus.common.validation.DTOValidator.validateMemberCreateDTO
+import eventus.common.validation.{validateToZIO, validateEmailField}
 import eventus.dto.MemberCreateDTO
 import eventus.model.Member
 import eventus.repository.MemberRepository
 import io.scalaland.chimney.dsl.TransformerOps
+import zio.prelude.Validation
 import zio.{IO, URLayer, ZLayer}
 
 case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
@@ -25,7 +26,12 @@ case class MemberServiceImpl(repo: MemberRepository) extends MemberService {
       memberCreateDTO: MemberCreateDTO
   ): IO[AppError, MemberId] =
     for {
-      validated <- validateMemberCreateDTO(memberCreateDTO).toZIO
+      validated <- validateToZIO(
+        Validation.validateWith(
+          validateEmailField(memberCreateDTO.email),
+          Validation.succeed(memberCreateDTO.isNotify)
+        )(MemberCreateDTO)
+      )
       id <- zio.Random.nextUUID
       member = validated
         .into[Member]

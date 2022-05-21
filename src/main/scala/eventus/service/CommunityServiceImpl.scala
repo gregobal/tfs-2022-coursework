@@ -1,13 +1,17 @@
 package eventus.service
 
-import eventus.common.validation.FieldValidator._
 import eventus.common.types.CommunityId
-import eventus.common.validation.DTOValidator.validateCommunityCreateDTO
-import eventus.common.{AppError, ServiceError}
+import eventus.common.validation.{
+  validateToZIO,
+  validateStringFieldNotBlank,
+  validateStringMinLength
+}
+import eventus.common.{AppError, ServiceError, validation}
 import eventus.dto.CommunityCreateDTO
 import eventus.model.Community
 import eventus.repository.CommunityRepository
 import io.scalaland.chimney.dsl.TransformerOps
+import zio.prelude.Validation
 import zio.{IO, Task, URLayer, ZLayer}
 
 import java.net.URLDecoder
@@ -26,7 +30,15 @@ case class CommunityServiceImpl(repo: CommunityRepository)
       communityCreateDTO: CommunityCreateDTO
   ): IO[AppError, CommunityId] = {
     for {
-      validated <- validateCommunityCreateDTO(communityCreateDTO).toZIO
+      validated <- validateToZIO(
+        Validation.validateWith(
+          for {
+            v <- validateStringFieldNotBlank(communityCreateDTO.name, "name")
+            _ <- validateStringMinLength(communityCreateDTO.name, "name", 2)
+          } yield v,
+          Validation.succeed(communityCreateDTO.description)
+        )(CommunityCreateDTO)
+      )
       id <- zio.Random.nextUUID
       community = validated
         .into[Community]

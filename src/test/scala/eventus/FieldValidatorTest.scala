@@ -1,6 +1,6 @@
 package eventus
 
-import eventus.common.validation.FieldValidator._
+import eventus.common.validation._
 import zio.test.{Gen, ZIOSpecDefault, assertTrue, check}
 
 import java.time.ZonedDateTime

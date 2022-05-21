@@ -1,10 +1,22 @@
-package eventus.common.validation
+package eventus.common
 
+import eventus.common.ValidationError
+import zio.IO
 import zio.prelude.Validation
 
 import java.time.ZonedDateTime
 
-object FieldValidator {
+package object validation {
+  // TODO - выяснить причину баги (в библиотеке prelude? zio2 RC5?), validateWith не аккумулирует строки ошибок
+  // имплисит для аккумуляции ошибок в строку для ValidationError
+  def validateToZIO[T](
+      validation: Validation[String, T]
+  ): IO[ValidationError, T] = {
+    Validation
+      .fromEither(validation.toEitherWith(_.mkString(", ")))
+      .mapError(ValidationError)
+      .toZIO
+  }
 
   def validateStringFieldNotBlank(
       fieldValue: String,

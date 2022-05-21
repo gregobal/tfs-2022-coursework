@@ -1,12 +1,18 @@
 package eventus.service
 
-import eventus.common.{AppError, ServiceError}
+import eventus.common.AppError
 import eventus.common.types.{CommunityId, EventId}
-import eventus.common.validation.DTOValidator.validateEventCreateDTO
+import eventus.common.validation.{
+  validateToZIO,
+  validateStringFieldNotBlank,
+  validateStringMinLength,
+  validateZoneDateTimeIsFuture
+}
 import eventus.dto.EventCreateDTO
 import eventus.model.Event
 import eventus.repository.EventRepository
 import io.scalaland.chimney.dsl.TransformerOps
+import zio.prelude.Validation
 import zio.{IO, URLayer, ZIO, ZLayer}
 
 case class EventServiceImpl(repo: EventRepository) extends EventService {
@@ -25,7 +31,19 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
       eventCreateDTO: EventCreateDTO
   ): ZIO[MemberService with NotificationService, AppError, EventId] =
     for {
-      validated <- validateEventCreateDTO(eventCreateDTO).toZIO
+      validated <- validateToZIO(
+        Validation.validateWith(
+          for {
+            v <- validateStringFieldNotBlank(eventCreateDTO.title, "title")
+            _ <- validateStringMinLength(eventCreateDTO.title, "title", 6)
+          } yield v,
+          Validation.succeed(eventCreateDTO.description),
+          validateZoneDateTimeIsFuture(eventCreateDTO.datetime, "datetime"),
+          Validation.succeed(eventCreateDTO.location),
+          Validation.succeed(eventCreateDTO.link),
+          Validation.succeed(eventCreateDTO.capacity)
+        )(EventCreateDTO)
+      )
       id <- zio.Random.nextUUID
       event = validated
         .into[Event]
