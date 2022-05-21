@@ -81,6 +81,6 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
 }
 
 object CommunityRepositoryPostgresImpl {
-  val live: URLayer[DataSource, CommunityRepositoryPostgresImpl] =
+  val live: URLayer[DataSource, CommunityRepository] =
     ZLayer.fromFunction(CommunityRepositoryPostgresImpl(_))
 }
