@@ -6,11 +6,11 @@ create unique index participant_ticket_uindex
 
 create table review
 (
-    id             uuid not null
+    id       uuid not null
         constraint review_pk
             primary key,
-    rating         int  not null,
-    feedback       varchar,
+    rating   int  not null,
+    feedback varchar,
     constraint review_participant_ticket_fk
         foreign key (id) references participant (ticket)
 );
