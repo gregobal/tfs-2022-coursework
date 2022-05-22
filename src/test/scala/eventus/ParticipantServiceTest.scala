@@ -14,14 +14,17 @@ import scala.collection.concurrent.TrieMap
 object ParticipantServiceTest extends ZIOSpecDefault {
   private val participant = Participant(
     MemberId(UUID.fromString("3a917bdd-84d0-4e22-b55c-bc52f063c821")),
-    EventId(UUID.fromString("3a917bdd-84d0-4e22-b55c-bc52f063c821"))
+    EventId(UUID.fromString("3a917bdd-84d0-4e22-b55c-bc52f063c821")),
+    UUID.fromString("8519cd3d-8366-4266-ae33-b6fba0763ac6")
   )
 
   override def spec: ZSpec[TestEnvironment with Scope, Any] =
     suite("participant service tests")(
       test("getByEventIdAndFilterByMemberId") {
         (for {
-          _ <- ZIO.serviceWithZIO[ParticipantRepository](_.insert(participant))
+          _ <- ZIO.serviceWithZIO[ParticipantRepository](
+            _.insert(participant.eventId, participant.memberId)
+          )
           result <- ParticipantService(
             _.getByEventIdAndFilterByMemberId(
               participant.eventId,
@@ -55,7 +58,9 @@ object ParticipantServiceTest extends ZIOSpecDefault {
       },
       test("unregister") {
         (for {
-          _ <- ZIO.serviceWithZIO[ParticipantRepository](_.insert(participant))
+          _ <- ZIO.serviceWithZIO[ParticipantRepository](
+            _.insert(participant.eventId, participant.memberId)
+          )
           _ <- ParticipantService(
             _.unregister(
               participant.eventId,
@@ -89,15 +94,28 @@ class InMemoryParticipantRepository extends ParticipantRepository {
     )
   )
 
-  override def insert(participant: Participant): IO[RepositoryError, Unit] =
+  override def insert(
+      eventId: EventId,
+      memberId: MemberId
+  ): IO[RepositoryError, Unit] =
     IO.succeed {
-      map.put((participant.eventId, participant.memberId), participant)
+      map.put(
+        (eventId, memberId),
+        Participant(
+          memberId,
+          eventId,
+          UUID.fromString("8519cd3d-8366-4266-ae33-b6fba0763ac6")
+        )
+      )
       ()
     }
 
-  override def delete(participant: Participant): IO[RepositoryError, Unit] =
+  override def delete(
+      eventId: EventId,
+      memberId: MemberId
+  ): IO[RepositoryError, Unit] =
     IO.succeed {
-      map.remove((participant.eventId, participant.memberId))
+      map.remove((eventId, memberId))
       ()
     }
 }

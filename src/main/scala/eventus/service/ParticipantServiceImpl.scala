@@ -1,14 +1,11 @@
 package eventus.service
 
+import eventus.common.types.{EventId, MemberId}
 import eventus.common.{AppError, RepositoryError, ServiceError}
 import eventus.model.Participant
 import eventus.repository.ParticipantRepository
-import eventus.common.types.{EventId, MemberId}
-import org.flywaydb.core.internal.database.postgresql.PostgreSQLType
 import org.postgresql.util.PSQLException
 import zio.{IO, URLayer, ZLayer}
-
-import java.util.UUID
 
 case class ParticipantServiceImpl(repo: ParticipantRepository)
     extends ParticipantService {
@@ -25,7 +22,7 @@ case class ParticipantServiceImpl(repo: ParticipantRepository)
       memberId: MemberId
   ): IO[AppError, Unit] = {
     repo
-      .insert(Participant(memberId, eventId))
+      .insert(eventId, memberId)
       .mapError { case RepositoryError(throwable) =>
         throwable match {
           case ex: PSQLException =>
@@ -40,7 +37,7 @@ case class ParticipantServiceImpl(repo: ParticipantRepository)
   }
 
   def unregister(eventId: EventId, memberId: MemberId): IO[AppError, Unit] = {
-    repo.delete(Participant(memberId, eventId))
+    repo.delete(eventId, memberId)
   }
 }
 

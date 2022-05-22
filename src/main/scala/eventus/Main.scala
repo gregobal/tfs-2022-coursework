@@ -7,7 +7,8 @@ import eventus.repository.{
   CommunityRepositoryPostgresImpl,
   EventRepositoryPostgresImpl,
   MemberRepositoryPostgresImpl,
-  ParticipantRepositoryPostgresImpl
+  ParticipantRepositoryPostgresImpl,
+  ReviewRepositoryPostgresImpl
 }
 import eventus.service._
 import zhttp.service.Server
@@ -28,6 +29,7 @@ object Main extends ZIOAppDefault {
         CommunityServiceImpl.live,
         MemberServiceImpl.live,
         ParticipantServiceImpl.live,
+        ReviewServiceImpl.live,
         NotificationServiceQueueImpl.live,
         NotificationQueue.live,
         EmailServiceImpl.live,
@@ -35,6 +37,7 @@ object Main extends ZIOAppDefault {
         CommunityRepositoryPostgresImpl.live,
         MemberRepositoryPostgresImpl.live,
         ParticipantRepositoryPostgresImpl.live,
+        ReviewRepositoryPostgresImpl.live,
         DataSourceImpl.live
       )
 }

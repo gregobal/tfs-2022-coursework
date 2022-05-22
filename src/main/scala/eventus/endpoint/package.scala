@@ -5,7 +5,8 @@ import eventus.service.{
   EventService,
   MemberService,
   NotificationService,
-  ParticipantService
+  ParticipantService,
+  ReviewService
 }
 import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.server.ServerEndpoint
@@ -24,12 +25,14 @@ package object endpoint {
       with MemberService
       with ParticipantService
       with NotificationService
+      with ReviewService
 
   private val endpointsRegistry = List(
     EventEndpoint.all,
     CommunityEndpoint.all,
     MemberEndpoint.all,
-    ParticipantEndpoint.all
+    ParticipantEndpoint.all,
+    ReviewEndpoint.all
   ).flatten
 
   val zioHttp: Http[AppServices, Throwable, Request, Response] =

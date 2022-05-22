@@ -10,6 +10,6 @@ trait ParticipantRepository {
       eventId: EventId,
       memberId: Option[MemberId]
   ): IO[RepositoryError, List[Participant]]
-  def insert(participant: Participant): IO[RepositoryError, Unit]
-  def delete(participant: Participant): IO[RepositoryError, Unit]
+  def insert(eventId: EventId, memberId: MemberId): IO[RepositoryError, Unit]
+  def delete(eventId: EventId, memberId: MemberId): IO[RepositoryError, Unit]
 }

@@ -1,12 +1,11 @@
 package eventus.repository
 
 import eventus.common.RepositoryError
-import eventus.model.Participant
 import eventus.common.types.{EventId, MemberId}
+import eventus.model.Participant
 import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 import zio.{IO, URLayer, ZLayer}
 
-import java.util.UUID
 import javax.sql.DataSource
 
 case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
@@ -41,26 +40,31 @@ case class ParticipantRepositoryPostgresImpl(dataSource: DataSource)
       .mapError(RepositoryError)
   }
 
-  override def insert(participant: Participant): IO[RepositoryError, Unit] =
+  override def insert(
+      eventId: EventId,
+      memberId: MemberId
+  ): IO[RepositoryError, Unit] =
     ctx
       .run(
         quote(
-          participants.insertValue(lift(participant))
+          participants
+            .insert(_.eventId -> lift(eventId), _.memberId -> lift(memberId))
         )
       )
       .unit
       .provideService(dataSource)
       .mapError(RepositoryError)
 
-  override def delete(participant: Participant): IO[RepositoryError, Unit] =
+  override def delete(
+      eventId: EventId,
+      memberId: MemberId
+  ): IO[RepositoryError, Unit] =
     ctx
       .run(
         quote(
           participants
             .filter(p =>
-              p.eventId == lift(participant.eventId) && p.memberId == lift(
-                participant.memberId
-              )
+              p.eventId == lift(eventId) && p.memberId == lift(memberId)
             )
             .delete
         )

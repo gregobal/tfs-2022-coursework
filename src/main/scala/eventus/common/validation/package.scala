@@ -1,6 +1,5 @@
 package eventus.common
 
-import eventus.common.ValidationError
 import zio.IO
 import zio.prelude.Validation
 
@@ -58,4 +57,24 @@ package object validation {
       Validation.fail(s"field value for $fieldName not valid")
     else Validation.succeed(fieldValue)
   }
+
+  def validateIntMax(
+      fieldValue: Int,
+      fieldName: String,
+      max: Int
+  ): Validation[String, Int] =
+    Validation
+      .fromPredicateWith(s"field value for $fieldName more than $max")(
+        fieldValue
+      )(_ <= max)
+
+  def validateIntMin(
+      fieldValue: Int,
+      fieldName: String,
+      min: Int
+  ): Validation[String, Int] =
+    Validation
+      .fromPredicateWith(s"field value for $fieldName less than $min")(
+        fieldValue
+      )(_ >= min)
 }
