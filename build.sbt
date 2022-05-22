@@ -60,8 +60,8 @@ scalacOptions ++= Seq(
 
 // deployment
 enablePlugins(JavaAppPackaging)
-//enablePlugins(DockerPlugin)
-//enablePlugins(AshScriptPlugin)
-//dockerBaseImage := "openjdk:jre-alpine"
+enablePlugins(DockerPlugin)
+enablePlugins(AshScriptPlugin)
+dockerBaseImage := "openjdk:jre-alpine"
 Compile / herokuAppName := "tfs-eventus"
 Compile / herokuJdkVersion := "11"
