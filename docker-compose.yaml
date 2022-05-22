@@ -20,6 +20,16 @@ services:
     restart: on-failure
     ports:
       - "8080:8080"
+    environment:
+      - EVENTUS_DB_URL=jdbc:postgresql://localhost:5432/eventus
+      - EVENTUS_DB_USER=eventus
+      - EVENTUS_DB_PASS=eventus
+      - EVENTUS_HTTP_PORT=8080
+      - EVENTUS_LOG_LEVEL=ERROR
+      - EVENTUS_EMAIL_HOST=your.smtp.host
+      - EVENTUS_EMAIL_PORT=465
+      - EVENTUS_EMAIL_USER=your@ema.il
+      - EVENTUS_EMAIL_PASS=secret
     network_mode: "host"
     depends_on:
       - postgres
