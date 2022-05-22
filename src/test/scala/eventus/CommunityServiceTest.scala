@@ -93,10 +93,10 @@ class InMemoryCommunityRepository extends CommunityRepository {
       ()
     }
 
-  override def update(community: Community): IO[RepositoryError, Unit] =
+  override def update(community: Community): IO[RepositoryError, Long] =
     IO.succeed {
       map.replace(community.id, community)
-      ()
+      1L
     }
 
   override def likeByWordsArray(

@@ -12,7 +12,7 @@ import eventus.model.Community
 import eventus.repository.CommunityRepository
 import io.scalaland.chimney.dsl.TransformerOps
 import zio.prelude.Validation
-import zio.{IO, Task, URLayer, ZLayer}
+import zio.{IO, Task, URLayer, ZIO, ZLayer}
 
 import java.net.URLDecoder
 
@@ -41,10 +41,16 @@ case class CommunityServiceImpl(repo: CommunityRepository)
   }
 
   override def update(community: Community): IO[AppError, Unit] = {
-    for {
+    (for {
       validated <- validateCommunity(community)
-      _ <- repo.update(validated)
-    } yield ()
+      r <- repo.update(validated)
+    } yield r)
+      .filterOrFail(_ == 1)(
+        ServiceError(
+          s"Error while updating, possibly not found community with id = ${community.id}"
+        )
+      )
+      .unit
   }
 
   // TODO - временно так себе реализация поиска, заменить на эффективный сервис поиска

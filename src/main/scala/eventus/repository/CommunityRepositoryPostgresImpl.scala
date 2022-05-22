@@ -54,7 +54,7 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
       .provideService(dataSource)
       .mapError(RepositoryError)
 
-  override def update(community: Community): IO[RepositoryError, Unit] =
+  override def update(community: Community): IO[RepositoryError, Long] =
     ctx
       .run(
         quote(
@@ -63,7 +63,6 @@ case class CommunityRepositoryPostgresImpl(dataSource: DataSource)
             .updateValue(lift(community))
         )
       )
-      .unit
       .provideService(dataSource)
       .mapError(RepositoryError)
 

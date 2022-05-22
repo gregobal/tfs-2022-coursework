@@ -1,6 +1,6 @@
 package eventus.service
 
-import eventus.common.{AppError, ValidationError}
+import eventus.common.{AppError, ServiceError, ValidationError}
 import eventus.common.types.{CommunityId, EventId}
 import eventus.common.validation.{
   validateStringFieldNotBlank,
@@ -43,10 +43,16 @@ case class EventServiceImpl(repo: EventRepository) extends EventService {
     } yield event.id
 
   override def update(event: Event): IO[AppError, Unit] = {
-    for {
+    (for {
       validated <- validateEvent(event)
-      _ <- repo.update(validated)
-    } yield ()
+      r <- repo.update(validated)
+    } yield r)
+      .filterOrFail(_ == 1)(
+        ServiceError(
+          s"Error while updating, possibly not found event with id = ${event.id}"
+        )
+      )
+      .unit
   }
 
   private def validateEvent(event: Event): IO[ValidationError, Event] =

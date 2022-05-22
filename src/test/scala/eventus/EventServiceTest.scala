@@ -108,9 +108,9 @@ class InMemoryEventRepository extends EventRepository {
     ()
   }
 
-  override def update(event: Event): IO[RepositoryError, Unit] = IO.succeed {
+  override def update(event: Event): IO[RepositoryError, Long] = IO.succeed {
     map.replace(event.id, event)
-    ()
+    1L
   }
 }
 

@@ -63,7 +63,7 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
       .provideService(dataSource)
       .mapError(RepositoryError)
 
-  override def update(event: Event): IO[RepositoryError, Unit] =
+  override def update(event: Event): IO[RepositoryError, Long] =
     ctx
       .run(
         quote(
@@ -72,7 +72,6 @@ case class EventRepositoryPostgresImpl(dataSource: DataSource)
             .updateValue(lift(event))
         )
       )
-      .unit
       .provideService(dataSource)
       .mapError(RepositoryError)
 
