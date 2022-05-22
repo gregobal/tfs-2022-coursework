@@ -20,7 +20,8 @@ object ReviewEndpoint {
   val all: List[ZServerEndpoint[ReviewService, ZioStreams]] =
     List(
       eventEndpointRoot.get
-        .in(path[UUID]("id"))
+        .description("Get reviews by event")
+        .in(path[UUID]("eventId"))
         .in("reviews")
         .out(jsonBody[List[Review]])
         .errorOut(jsonBody[ApiErrorDTO])
@@ -30,7 +31,8 @@ object ReviewEndpoint {
           )
         ),
       eventEndpointRoot.post
-        .in(path[UUID]("id"))
+        .description("Create review on event")
+        .in(path[UUID]("eventId"))
         .in("review")
         .in(jsonBody[ReviewCreateDTO])
         .errorOut(jsonBody[ApiErrorDTO])

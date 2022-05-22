@@ -28,9 +28,9 @@ package object endpoint {
       with ReviewService
 
   private val endpointsRegistry = List(
-    EventEndpoint.all,
     CommunityEndpoint.all,
     MemberEndpoint.all,
+    EventEndpoint.all,
     ParticipantEndpoint.all,
     ReviewEndpoint.all
   ).flatten

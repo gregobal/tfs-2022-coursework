@@ -24,6 +24,7 @@ object EventEndpoint {
     ZioStreams
   ]] = List(
     communityEndpointRoot.get
+      .description("Get list of events by community")
       .in(path[UUID]("communityId"))
       .in("events")
       .out(jsonBody[List[Event]])
@@ -34,6 +35,7 @@ object EventEndpoint {
         )
       ),
     communityEndpointRoot.post
+      .description("Create event for community")
       .in(path[UUID]("communityId"))
       .in("events")
       .in(jsonBody[EventCreateDTO])
@@ -45,6 +47,7 @@ object EventEndpoint {
         )
       ),
     eventEndpointRoot.get
+      .description("Get list of events or filter it by community")
       .in(query[Option[UUID]]("communityId"))
       .out(jsonBody[List[Event]])
       .errorOut(jsonBody[ApiErrorDTO])
@@ -56,7 +59,8 @@ object EventEndpoint {
         )
       ),
     eventEndpointRoot.get
-      .in(path[UUID]("id"))
+      .description("Get event by its id")
+      .in(path[UUID]("eventId"))
       .out(jsonBody[Option[Event]])
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
@@ -65,6 +69,7 @@ object EventEndpoint {
         )
       ),
     eventEndpointRoot.put
+      .description("Update existed event")
       .in(jsonBody[Event])
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(eventCreateDTO =>

@@ -17,12 +17,12 @@ import java.util.UUID
 
 object ParticipantEndpoint {
 
-  private val eventId = path[UUID]("eventId")
-  private val memberId = path[UUID]("memberId")
-
   val all: List[ZServerEndpoint[ParticipantService, ZioStreams]] = List(
     eventEndpointRoot.get
-      .in(eventId)
+      .description(
+        "Get list of event's participant anf filter its by community member"
+      )
+      .in(path[UUID]("eventId"))
       .in("participants")
       .in(query[Option[UUID]]("memberId"))
       .out(jsonBody[List[Participant]])
@@ -38,9 +38,10 @@ object ParticipantEndpoint {
         )
       ),
     eventEndpointRoot.post
-      .in(eventId)
+      .description("Register on event (become a participant)")
+      .in(path[UUID]("eventId"))
       .in("register")
-      .in(memberId)
+      .in(path[UUID]("memberId"))
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(
@@ -48,9 +49,10 @@ object ParticipantEndpoint {
         )
       ),
     eventEndpointRoot.delete
+      .description("Unregister from event")
       .in(path[UUID]("eventId"))
       .in("unregister")
-      .in(memberId)
+      .in(path[UUID]("memberId"))
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(p =>
         handleServerLogicError(

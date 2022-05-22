@@ -21,6 +21,7 @@ object CommunityEndpoint {
 
   val all: List[ZServerEndpoint[CommunityService, ZioStreams]] = List(
     communityEndpointRoot.get
+      .description("Get list of communities")
       .out(jsonBody[List[Community]])
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(_ =>
@@ -29,7 +30,8 @@ object CommunityEndpoint {
         )
       ),
     communityEndpointRoot.get
-      .in(path[UUID]("id"))
+      .description("Get community by its id")
+      .in(path[UUID]("communityId"))
       .out(jsonBody[Option[Community]])
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
@@ -38,6 +40,7 @@ object CommunityEndpoint {
         )
       ),
     communityEndpointRoot.post
+      .description("Create new community")
       .in(jsonBody[CommunityCreateDTO])
       .out(jsonBody[CommunityId])
       .errorOut(jsonBody[ApiErrorDTO])
@@ -47,6 +50,7 @@ object CommunityEndpoint {
         )
       ),
     communityEndpointRoot.put
+      .description("Update existing community")
       .in(jsonBody[Community])
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(community =>
@@ -55,6 +59,7 @@ object CommunityEndpoint {
         )
       ),
     communityEndpointRoot.get
+      .description("Search in communities by keywords")
       .in("search")
       .in(query[String]("q"))
       .out(jsonBody[List[Community]])

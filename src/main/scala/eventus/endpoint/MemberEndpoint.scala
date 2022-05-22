@@ -21,6 +21,7 @@ object MemberEndpoint {
 
   val all: List[ZServerEndpoint[MemberService, ZioStreams]] = List(
     communityEndpointRoot.get
+      .description("Get list of community's members")
       .in(path[UUID]("communityId"))
       .in("members")
       .out(jsonBody[List[Member]])
@@ -31,6 +32,7 @@ object MemberEndpoint {
         )
       ),
     communityEndpointRoot.post
+      .description("Join into community")
       .in(path[UUID]("communityId"))
       .in("join")
       .in(jsonBody[MemberCreateDTO])
@@ -42,7 +44,8 @@ object MemberEndpoint {
         )
       ),
     memberEndpointRoot.get
-      .in(path[UUID]("id"))
+      .description("Get member by its id")
+      .in(path[UUID]("memberId"))
       .out(jsonBody[Option[Member]])
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
@@ -51,6 +54,7 @@ object MemberEndpoint {
         )
       ),
     memberEndpointRoot.put
+      .description("Update existed member")
       .in("notify")
       .in(jsonBody[MemberIsNotifyDTO])
       .errorOut(jsonBody[ApiErrorDTO])
@@ -60,7 +64,8 @@ object MemberEndpoint {
         )
       ),
     memberEndpointRoot.delete
-      .in(path[UUID]("id"))
+      .description("Delete member, also means leave community")
+      .in(path[UUID]("memberId"))
       .errorOut(jsonBody[ApiErrorDTO])
       .zServerLogic(id =>
         handleServerLogicError(
