@@ -1,15 +1,15 @@
 package eventus
 
+import eventus.common.RepositoryError
 import eventus.common.types.CommunityId
-import eventus.common.{RepositoryError, types}
-import eventus.dto.CommunityCreateDTO
-import eventus.model.Community
-import eventus.repository.CommunityRepository
-import eventus.service.{CommunityService, CommunityServiceImpl}
+import eventus.community.dto.CommunityCreateDTO
+import eventus.community.model.Community
+import eventus.community.repository.CommunityRepository
+import eventus.community.service.{CommunityService, CommunityServiceImpl}
 import io.scalaland.chimney.dsl.TransformerOps
 import zio.test.Assertion.isSome
-import zio.{IO, Scope, ULayer, ZIO, ZLayer}
 import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assert, assertTrue}
+import zio.{IO, Scope, ULayer, ZIO, ZLayer}
 
 import java.util.UUID
 import scala.collection.concurrent.TrieMap
@@ -82,7 +82,7 @@ class InMemoryCommunityRepository extends CommunityRepository {
   )
 
   override def filterById(
-      id: types.CommunityId
+      id: CommunityId
   ): IO[RepositoryError, Option[Community]] = IO.succeed(
     map.get(id)
   )

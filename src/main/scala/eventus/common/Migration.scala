@@ -1,7 +1,7 @@
 package eventus.common
 
 import org.flywaydb.core.Flyway
-import zio.{RIO, Task, ZIO}
+import zio.{Task, ZIO}
 
 object Migration {
   def migrate(dbConfig: DbConfig): Task[Unit] = {

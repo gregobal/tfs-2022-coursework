@@ -1,16 +1,29 @@
 package eventus
 
+import eventus.common.Endpoints.{swagger, zioHttp}
 import eventus.common.Migration.migrate
 import eventus.common.{AppConfig, DataSourceImpl}
-import eventus.endpoint.{swagger, zioHttp}
-import eventus.repository.{
+import eventus.community.repository.{
   CommunityRepositoryPostgresImpl,
+  MemberRepositoryPostgresImpl
+}
+import eventus.community.service.{CommunityServiceImpl, MemberServiceImpl}
+import eventus.event.repository.{
   EventRepositoryPostgresImpl,
-  MemberRepositoryPostgresImpl,
   ParticipantRepositoryPostgresImpl,
   ReviewRepositoryPostgresImpl
 }
-import eventus.service._
+import eventus.event.service.{
+  EventServiceImpl,
+  ParticipantServiceImpl,
+  ReviewServiceImpl
+}
+import eventus.notification.service.{
+  EmailServiceImpl,
+  NotificationQueue,
+  NotificationService,
+  NotificationServiceQueueImpl
+}
 import zhttp.service.Server
 import zio.{ExitCode, Scope, ZIO, ZIOAppArgs, ZIOAppDefault}
 

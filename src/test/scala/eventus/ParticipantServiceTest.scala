@@ -1,10 +1,10 @@
 package eventus
 
+import eventus.common.RepositoryError
 import eventus.common.types.{EventId, MemberId}
-import eventus.common.{RepositoryError, types}
-import eventus.model.Participant
-import eventus.repository.ParticipantRepository
-import eventus.service.{ParticipantService, ParticipantServiceImpl}
+import eventus.event.model.Participant
+import eventus.event.repository.ParticipantRepository
+import eventus.event.service.{ParticipantService, ParticipantServiceImpl}
 import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assertTrue}
 import zio.{IO, Scope, ULayer, ZIO, ZLayer}
 
@@ -86,8 +86,8 @@ class InMemoryParticipantRepository extends ParticipantRepository {
   private val map = new TrieMap[(EventId, MemberId), Participant]()
 
   override def filter(
-      eventId: types.EventId,
-      memberId: Option[types.MemberId]
+      eventId: EventId,
+      memberId: Option[MemberId]
   ): IO[RepositoryError, List[Participant]] = IO.succeed(
     map.values.toList.filter(p =>
       p.eventId == eventId && (memberId.isEmpty || p.memberId == memberId.get)

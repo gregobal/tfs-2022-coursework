@@ -52,6 +52,7 @@ lazy val root = (project in file("."))
 
 scalacOptions ++= Seq(
   "-Ymacro-annotations",
+  "-Ywarn-unused:imports",
   "-language:implicitConversions",
   "-Xfatal-warnings",
   "-deprecation",

@@ -2,10 +2,10 @@ package eventus
 
 import eventus.common.RepositoryError
 import eventus.common.types.{CommunityId, MemberId}
-import eventus.dto.MemberCreateDTO
-import eventus.model.Member
-import eventus.repository.MemberRepository
-import eventus.service.{MemberService, MemberServiceImpl}
+import eventus.community.dto.MemberCreateDTO
+import eventus.community.model.Member
+import eventus.community.repository.MemberRepository
+import eventus.community.service.{MemberService, MemberServiceImpl}
 import io.scalaland.chimney.dsl.TransformerOps
 import zio.test.Assertion.isSome
 import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assert, assertTrue}

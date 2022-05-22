@@ -1,16 +1,15 @@
 package eventus
 
-import eventus.common.types.{CommunityId, EventId}
-import eventus.common.{AppError, RepositoryError, types}
-import eventus.dto.{EventCreateDTO, MemberCreateDTO, MemberIsNotifyDTO}
-import eventus.model.{Event, Member}
-import eventus.repository.EventRepository
-import eventus.service.{
-  EventService,
-  EventServiceImpl,
-  MemberService,
-  NotificationService
-}
+import eventus.common.types.{CommunityId, EventId, MemberId}
+import eventus.common.{AppError, RepositoryError}
+import eventus.community.dto.{MemberCreateDTO, MemberIsNotifyDTO}
+import eventus.community.model.Member
+import eventus.community.service.MemberService
+import eventus.event.dto.EventCreateDTO
+import eventus.event.model.Event
+import eventus.event.repository.EventRepository
+import eventus.event.service.{EventService, EventServiceImpl}
+import eventus.notification.service.NotificationService
 import io.scalaland.chimney.dsl.TransformerOps
 import zio.test.Assertion.isSome
 import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assert, assertTrue}
@@ -135,14 +134,14 @@ object MemberServiceFake {
     override def getByCommunityId(
         communityId: CommunityId
     ): IO[AppError, List[Member]] = IO.succeed(List.empty)
-    override def getById(id: types.MemberId): IO[AppError, Option[Member]] =
+    override def getById(id: MemberId): IO[AppError, Option[Member]] =
       ZIO.none
     override def create(
         communityId: CommunityId,
         memberCreateDTO: MemberCreateDTO
-    ): IO[AppError, types.MemberId] =
-      IO.succeed(types.MemberId(UUID.randomUUID()))
-    override def delete(id: types.MemberId): IO[AppError, Unit] = ZIO.unit
+    ): IO[AppError, MemberId] =
+      IO.succeed(MemberId(UUID.randomUUID()))
+    override def delete(id: MemberId): IO[AppError, Unit] = ZIO.unit
     override def setNotify(
         memberIsNotifyDTO: MemberIsNotifyDTO
     ): IO[AppError, Unit] = ZIO.unit

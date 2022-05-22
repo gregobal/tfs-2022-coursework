@@ -6,8 +6,6 @@ import zio.prelude.Validation
 import java.time.ZonedDateTime
 
 package object validation {
-  // TODO - выяснить причину баги (в библиотеке prelude? zio2 RC5?), validateWith не аккумулирует строки ошибок
-  // имплисит для аккумуляции ошибок в строку для ValidationError
   def validateToZIO[T](
       validation: Validation[String, T]
   ): IO[ValidationError, T] = {

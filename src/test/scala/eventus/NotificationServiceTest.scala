@@ -1,8 +1,8 @@
 package eventus
 
 import eventus.common.types.{CommunityId, EventId}
-import eventus.model.Event
-import eventus.service.{
+import eventus.event.model.Event
+import eventus.notification.service.{
   EmailService,
   NotificationQueue,
   NotificationService,

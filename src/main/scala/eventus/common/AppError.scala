@@ -1,6 +1,6 @@
 package eventus.common
 
-import eventus.dto.ApiErrorDTO
+import eventus.common.dto.ApiErrorDTO
 import zio.ZIO
 
 sealed trait AppError {

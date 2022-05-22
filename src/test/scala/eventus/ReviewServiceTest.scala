@@ -1,11 +1,11 @@
 package eventus
 
+import eventus.common.RepositoryError
 import eventus.common.types.{EventId, MemberId}
-import eventus.common.{RepositoryError, types}
-import eventus.dto.ReviewCreateDTO
-import eventus.model.Review
-import eventus.repository.ReviewRepository
-import eventus.service.{ReviewService, ReviewServiceImpl}
+import eventus.event.dto.ReviewCreateDTO
+import eventus.event.model.Review
+import eventus.event.repository.ReviewRepository
+import eventus.event.service.{ReviewService, ReviewServiceImpl}
 import zio.test.{TestEnvironment, ZIOSpecDefault, ZSpec, assertTrue}
 import zio.{IO, Scope, ULayer, ZIO, ZLayer}
 
@@ -56,13 +56,13 @@ class InMemoryReviewRepository extends ReviewRepository {
   private val map = new TrieMap[MemberId, List[(EventId, Review)]]()
 
   override def filterByEventId(
-      eventId: types.EventId
+      eventId: EventId
   ): IO[RepositoryError, List[Review]] = IO.succeed(
     map.values.toList.flatMap(_.filter(_._1 == eventId).map(_._2))
   )
 
   override def insert(
-      eventId: types.EventId,
+      eventId: EventId,
       reviewCreateDTO: ReviewCreateDTO
   ): IO[RepositoryError, Unit] = IO.succeed {
     val review = Review(
