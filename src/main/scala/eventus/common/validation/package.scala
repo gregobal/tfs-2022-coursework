@@ -6,6 +6,9 @@ import zio.prelude.Validation
 import java.time.ZonedDateTime
 
 package object validation {
+  private val emailRegex =
+      """^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""".r
+  
   def validateToZIO[T](
       validation: Validation[String, T]
   ): IO[ValidationError, T] = {
@@ -48,9 +51,7 @@ package object validation {
   def validateEmailField(
       fieldValue: String,
       fieldName: String = "email"
-  ): Validation[String, String] = {
-    val emailRegex =
-      """^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""".r
+  ): Validation[String, String] = {    
     if (fieldValue.isBlank || emailRegex.findFirstIn(fieldValue).isEmpty)
       Validation.fail(s"field value for $fieldName not valid")
     else Validation.succeed(fieldValue)
